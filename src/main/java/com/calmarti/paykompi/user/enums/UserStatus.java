@@ -1,4 +1,4 @@
-package com.calmarti.paykompi.common;
+package com.calmarti.paykompi.user.enums;
 
 public enum UserStatus {
     ACTIVE,

@@ -1,12 +1,13 @@
 package com.calmarti.paykompi.user.entity;
 
-import com.calmarti.paykompi.common.UserStatus;
-import com.calmarti.paykompi.common.UserType;
+import com.calmarti.paykompi.user.enums.UserStatus;
+import com.calmarti.paykompi.user.enums.UserType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -20,16 +21,19 @@ import java.util.UUID;
 @Table(name="USERS")
 public class User {
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @GeneratedValue
     private UUID id;
     @Column(unique = true)
     private String email;
     private String passwordHash;
     private String firstName;
     private String lastName;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserType usertype;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserStatus userStatus;
+    @CreationTimestamp
     private Instant createdAt;
-    private Instant updatedAt;
-
 }
