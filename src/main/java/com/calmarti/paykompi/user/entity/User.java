@@ -1,5 +1,6 @@
 package com.calmarti.paykompi.user.entity;
 
+import com.calmarti.paykompi.user.enums.UserRole;
 import com.calmarti.paykompi.user.enums.UserStatus;
 import com.calmarti.paykompi.user.enums.UserType;
 import jakarta.persistence.*;
@@ -28,6 +29,8 @@ public class User {
     private String passwordHash;
     private String firstName;
     private String lastName;
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private UserType usertype;

@@ -1,5 +1,6 @@
 package com.calmarti.paykompi.user.dto;
 
+import com.calmarti.paykompi.user.enums.UserRole;
 import com.calmarti.paykompi.user.enums.UserStatus;
 import com.calmarti.paykompi.user.enums.UserType;
 
@@ -11,6 +12,7 @@ public record UserResponseDto(
         String email,
         String firstName,
         String lastName,
+        UserRole role,
         UserType usertype,
         UserStatus userStatus,
         Instant createdAt
