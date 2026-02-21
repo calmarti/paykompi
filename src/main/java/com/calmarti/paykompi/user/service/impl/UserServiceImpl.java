@@ -5,7 +5,6 @@ import com.calmarti.paykompi.user.dto.UserResponseDto;
 import com.calmarti.paykompi.user.entity.User;
 import com.calmarti.paykompi.user.enums.UserRole;
 import com.calmarti.paykompi.user.enums.UserStatus;
-import com.calmarti.paykompi.user.enums.UserType;
 import com.calmarti.paykompi.user.mapper.UserMapper;
 import com.calmarti.paykompi.user.repository.UserRepository;
 import com.calmarti.paykompi.user.service.UserService;
@@ -30,7 +29,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto createUser(CreateUserRequestDto request) {
         //validate username, email uniqueness constraint
         if (userRepository.existsByUsername(request.username())) {
-            throw new IllegalArgumentException("Username already exist: " + request.email());
+            throw new IllegalArgumentException("Username already exist: " + request.username());
         }
         if (userRepository.existsByEmail(request.email())) {
             throw new IllegalArgumentException("Email already exist: " + request.email());
