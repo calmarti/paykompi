@@ -12,8 +12,8 @@ public record UserResponseDto(
         String email,
         String firstName,
         String lastName,
-        UserRole role,
-        UserType usertype,
+        UserRole userRole,
+        UserType userType,
         UserStatus userStatus,
         Instant createdAt
         ){}

@@ -19,7 +19,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
                 http
-                .csrf(csrf -> csrf.disable())   //Disable CSRF for REST APIsç
+                .csrf(csrf -> csrf.disable())   //Disable CSRF for REST APIs
 
                 // No sessions (important for APIs)
                 .sessionManagement(session ->

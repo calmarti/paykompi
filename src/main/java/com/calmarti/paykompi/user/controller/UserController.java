@@ -1,12 +1,12 @@
 package com.calmarti.paykompi.user.controller;
 
+import com.calmarti.paykompi.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UserResponseDto;
 import com.calmarti.paykompi.user.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -16,12 +16,18 @@ public class UserController {
 
     private UserService userService;
 
-    UserController(UserService userService){
+    public UserController(UserService userService){
         this.userService = userService;
     }
 
+    @PostMapping
+    public ResponseEntity<UserResponseDto> createUser(@Valid CreateUserRequestDto request){
+        UserResponseDto user = userService.createUser(request);
+        return new ResponseEntity<>(user,HttpStatus.CREATED);
+    }
+
     @GetMapping("/{id}")
-    ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id){
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id){
         UserResponseDto userResponseDto = userService.getUserById(id);
         return ResponseEntity.ok(userResponseDto);
     }
