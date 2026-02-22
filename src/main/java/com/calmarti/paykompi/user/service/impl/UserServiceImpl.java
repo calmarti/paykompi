@@ -3,6 +3,7 @@ package com.calmarti.paykompi.user.service.impl;
 import com.calmarti.paykompi.common.exception.DuplicateResourceException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
 import com.calmarti.paykompi.user.dto.CreateUserRequestDto;
+import com.calmarti.paykompi.user.dto.UpdateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UserResponseDto;
 import com.calmarti.paykompi.user.entity.User;
 import com.calmarti.paykompi.user.enums.UserRole;
@@ -28,20 +29,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserResponseDto createUser(CreateUserRequestDto request) {
+    public UserResponseDto createUser(CreateUserRequestDto dto) {
         //validate username, email uniqueness constraint
-        if (userRepository.existsByUsername(request.username())) {
+        if (userRepository.existsByUsername(dto.username())) {
              throw new DuplicateResourceException("Username already exists");
         }
-        if (userRepository.existsByEmail(request.email())) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new DuplicateResourceException("Email already exists");
         }
 
         //map dto to entity
-        User user = UserMapper.toEntity(request);
+        User user = UserMapper.toEntity(dto);
         //hash password, add it to entity
         //String hash = passwordEncoder.encode(request.password());
-        user.setPasswordHash(request.password());
+        user.setPasswordHash(dto.password());
         user.setUserRole(UserRole.USER);
         user.setUserStatus(UserStatus.ACTIVE);
         //save to DB
@@ -55,6 +56,14 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Not found"));
         return UserMapper.toResponse(user);
+    }
+
+    @Override
+    public void updateUserById(UUID id, UpdateUserRequestDto dto) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        UserMapper.updateEntity(user, dto);
+        userRepository.save(user);
     }
 
 }

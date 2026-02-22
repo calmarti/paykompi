@@ -1,7 +1,9 @@
 package com.calmarti.paykompi.user.controller;
 
 import com.calmarti.paykompi.user.dto.CreateUserRequestDto;
+import com.calmarti.paykompi.user.dto.UpdateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UserResponseDto;
+import com.calmarti.paykompi.user.mapper.UserMapper;
 import com.calmarti.paykompi.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -21,15 +23,22 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto request){
-        UserResponseDto user = userService.createUser(request);
-        return new ResponseEntity<>(user,HttpStatus.CREATED);
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto dto){
+        UserResponseDto userResponseDto = userService.createUser(dto);
+        return new ResponseEntity<>(userResponseDto,HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id){
         UserResponseDto userResponseDto = userService.getUserById(id);
         return ResponseEntity.ok(userResponseDto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @Valid @RequestBody UpdateUserRequestDto dto){
+        //check if following line is correct
+        userService.updateUserById(id, dto);
+        return ResponseEntity.noContent().build();
     }
 
 }

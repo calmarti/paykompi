@@ -1,6 +1,7 @@
 package com.calmarti.paykompi.user.mapper;
 
 import com.calmarti.paykompi.user.dto.CreateUserRequestDto;
+import com.calmarti.paykompi.user.dto.UpdateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UserResponseDto;
 import com.calmarti.paykompi.user.entity.User;
 
@@ -27,4 +28,11 @@ public class UserMapper {
                 user.getCreatedAt());
     }
 
+    public static User updateEntity(User user, UpdateUserRequestDto dto){
+        user.setUsername(dto.username());
+        user.setEmail(dto.email());
+        user.setFirstName(dto.firstName());
+        user.setLastName(dto.lastName());
+        return user;
+    }
 }
