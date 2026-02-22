@@ -29,10 +29,18 @@ public class UserMapper {
     }
 
     public static User updateEntity(User user, UpdateUserRequestDto dto){
-        user.setUsername(dto.username());
-        user.setEmail(dto.email());
-        user.setFirstName(dto.firstName());
-        user.setLastName(dto.lastName());
+        if (dto.username() != null)  {
+            user.setUsername(dto.username());
+        }
+        if (dto.email() != null)  {
+            user.setEmail(dto.email());
+        }
+        if (dto.firstName() != null)  {
+            user.setFirstName(dto.firstName());
+        }
+        if (dto.lastName() != null)  {
+            user.setLastName(dto.lastName());
+        }
         return user;
     }
 }

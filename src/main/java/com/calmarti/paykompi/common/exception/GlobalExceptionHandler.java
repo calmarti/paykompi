@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -19,16 +21,35 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<APIErrorDetails> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
         APIErrorDetails errorDetails = new APIErrorDetails(
-                "Malformed request body or not existent",
+                "Malformed request body",
                 HttpStatus.BAD_REQUEST.value(),
                 request.getRequestURI(),
-                LocalDateTime.now());
+                LocalDateTime.now(),
+                null);
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<APIErrorDetails> handleMethodArgumentNotValidBadRequest(MethodArgumentNotValidException e, HttpServletRequest request){
+        Map<String,String> errors = new HashMap<>();
+        e.getBindingResult().getFieldErrors()
+                .forEach((error)-> errors.put(error.getField(),error.getDefaultMessage()));
+
+
+        APIErrorDetails errorDetails = new APIErrorDetails(
+                "Validation failed",
+                HttpStatus.BAD_REQUEST.value(),
+                request.getRequestURI(),
+                LocalDateTime.now(),
+                errors
+                );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+    }
+
     //handler for bad request of type MissingServletRequestParameterException.class
-    //handler for bad request of type MethodArgumentNotValidException.class (validations)
+
 
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -37,7 +58,8 @@ public class GlobalExceptionHandler {
                 "Not found",
                 HttpStatus.NOT_FOUND.value(),
                 request.getRequestURI(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
     }
@@ -48,7 +70,8 @@ public class GlobalExceptionHandler {
                 e.getMessage(),
                 HttpStatus.CONFLICT.value(),
                 request.getRequestURI(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
     }
@@ -60,7 +83,8 @@ public class GlobalExceptionHandler {
                 "Internal server error",
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 request.getRequestURI(),
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                null
         );
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorDetails);
     }

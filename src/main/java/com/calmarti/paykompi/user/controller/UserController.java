@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @Valid @RequestBody UpdateUserRequestDto dto){
+    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @RequestBody UpdateUserRequestDto dto){
         //check if following line is correct
         userService.updateUserById(id, dto);
         return ResponseEntity.noContent().build();
