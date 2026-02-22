@@ -1,5 +1,7 @@
 package com.calmarti.paykompi.user.service.impl;
 
+import com.calmarti.paykompi.common.exception.DuplicateResourceException;
+import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
 import com.calmarti.paykompi.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UserResponseDto;
 import com.calmarti.paykompi.user.entity.User;
@@ -29,10 +31,10 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto createUser(CreateUserRequestDto request) {
         //validate username, email uniqueness constraint
         if (userRepository.existsByUsername(request.username())) {
-            throw new IllegalArgumentException("Username already exist: " + request.username());
+             throw new DuplicateResourceException("Username already exists");
         }
         if (userRepository.existsByEmail(request.email())) {
-            throw new IllegalArgumentException("Email already exist: " + request.email());
+            throw new DuplicateResourceException("Email already exists");
         }
 
         //map dto to entity
@@ -51,7 +53,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Resource not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
         return UserMapper.toResponse(user);
     }
 
