@@ -8,7 +8,7 @@ import org.springframework.boot.resttestclient.TestRestTemplate;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureRestTestClient
-public class UserControllerWebTest {
+public class UserControllerIT {
 
 @Autowired
 private TestRestTemplate testRestTemplate;
