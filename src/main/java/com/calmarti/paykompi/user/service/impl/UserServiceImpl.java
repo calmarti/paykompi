@@ -11,10 +11,8 @@ import com.calmarti.paykompi.user.enums.UserStatus;
 import com.calmarti.paykompi.user.mapper.UserMapper;
 import com.calmarti.paykompi.user.repository.UserRepository;
 import com.calmarti.paykompi.user.service.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -30,7 +28,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponseDto createUser(CreateUserRequestDto dto) {
-        //validate username, email uniqueness constraint
+        //validate username, email uniqueness constraints
         if (userRepository.existsByUsername(dto.username())) {
              throw new DuplicateResourceException("Username already exists");
         }
