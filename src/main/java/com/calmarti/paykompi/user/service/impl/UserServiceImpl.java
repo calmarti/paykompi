@@ -11,7 +11,6 @@ import com.calmarti.paykompi.user.enums.UserStatus;
 import com.calmarti.paykompi.user.mapper.UserMapper;
 import com.calmarti.paykompi.user.repository.UserRepository;
 import com.calmarti.paykompi.user.service.UserService;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

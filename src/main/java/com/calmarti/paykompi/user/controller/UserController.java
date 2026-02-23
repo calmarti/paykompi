@@ -3,7 +3,6 @@ package com.calmarti.paykompi.user.controller;
 import com.calmarti.paykompi.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UpdateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UserResponseDto;
-import com.calmarti.paykompi.user.mapper.UserMapper;
 import com.calmarti.paykompi.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
