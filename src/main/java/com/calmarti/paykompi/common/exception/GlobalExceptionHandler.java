@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 null);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorDetails);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

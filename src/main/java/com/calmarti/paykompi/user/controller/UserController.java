@@ -2,6 +2,7 @@ package com.calmarti.paykompi.user.controller;
 
 import com.calmarti.paykompi.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UpdateUserRequestDto;
+import com.calmarti.paykompi.user.dto.UpdateUserStatusDto;
 import com.calmarti.paykompi.user.dto.UserResponseDto;
 import com.calmarti.paykompi.user.service.UserService;
 import jakarta.validation.Valid;
@@ -40,4 +41,9 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> updateUserStatus(@PathVariable UUID id, @RequestBody @Valid UpdateUserStatusDto dto){
+        userService.changeUserStatus(id, dto);
+        return ResponseEntity.noContent().build();
+    }
 }

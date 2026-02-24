@@ -4,6 +4,7 @@ import com.calmarti.paykompi.common.exception.DuplicateResourceException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
 import com.calmarti.paykompi.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UpdateUserRequestDto;
+import com.calmarti.paykompi.user.dto.UpdateUserStatusDto;
 import com.calmarti.paykompi.user.dto.UserResponseDto;
 import com.calmarti.paykompi.user.entity.User;
 import com.calmarti.paykompi.user.enums.UserRole;
@@ -20,7 +21,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     //private PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository /*PasswordEncoder passwordEncoder*/){
+    public UserServiceImpl(UserRepository userRepository /*PasswordEncoder passwordEncoder*/) {
         this.userRepository = userRepository;
         //this.passwordEncoder = passwordEncoder;
     }
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto createUser(CreateUserRequestDto dto) {
         //validate username, email uniqueness constraints
         if (userRepository.existsByUsername(dto.username())) {
-             throw new DuplicateResourceException("Username already exists");
+            throw new DuplicateResourceException("Username already exists");
         }
         if (userRepository.existsByEmail(dto.email())) {
             throw new DuplicateResourceException("Email already exists");
@@ -63,4 +64,11 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Override
+    public void changeUserStatus(UUID id, UpdateUserStatusDto dto) {
+        User user = userRepository.findById(id).
+                orElseThrow(() -> new ResourceNotFoundException("Not found"));
+        UserMapper.updateUserStatusInEntity(user, dto);
+        userRepository.save(user);
+    }
 }

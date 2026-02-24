@@ -2,6 +2,7 @@ package com.calmarti.paykompi.user.mapper;
 
 import com.calmarti.paykompi.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.user.dto.UpdateUserRequestDto;
+import com.calmarti.paykompi.user.dto.UpdateUserStatusDto;
 import com.calmarti.paykompi.user.dto.UserResponseDto;
 import com.calmarti.paykompi.user.entity.User;
 
@@ -41,6 +42,11 @@ public class UserMapper {
         if (dto.lastName() != null)  {
             user.setLastName(dto.lastName());
         }
+        return user;
+    }
+
+    public static User updateUserStatusInEntity(User user, UpdateUserStatusDto dto){
+        user.setUserStatus(dto.userStatus());
         return user;
     }
 }
