@@ -66,6 +66,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void changeUserStatus(UUID id, UpdateUserStatusDto dto) {
+        //TODO: control for transition from CLOSED to ACTIVE or SUSPENDED
         User user = userRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("Not found"));
         UserMapper.updateUserStatusInEntity(user, dto);
