@@ -1,4 +1,4 @@
-package com.calmarti.paykompi.user.service.impl;
+package com.calmarti.paykompi.account.service;
 
 public interface AccountService {
    // List<AccountResponseDto> getAllAccounts()    //GET /api/v1/accounts   -> requires role = ADMIN and it needs filters & pagination

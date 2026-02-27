@@ -48,7 +48,8 @@ public class UserControllerSliceTest {
                     "Doe",
                     UserType.PERSONAL,
                     UserStatus.ACTIVE,
-                    Instant.parse("2026-02-22T11:28:04.962Z"));
+                    Instant.parse("2026-02-22T11:28:04.962Z"),
+                    Instant.parse("2026-XXXXXXXXXXXXXXXXXXX"));
 
             //arrange
             given(userService.getUserById(id))
@@ -64,7 +65,8 @@ public class UserControllerSliceTest {
                     .andExpect(jsonPath("$.lastName").value(testUser.lastName()))
                     .andExpect(jsonPath("$.userType").value(testUser.userType().toString()))
                     .andExpect(jsonPath("$.userStatus").value(testUser.userStatus().toString()))
-                    .andExpect(jsonPath("$.createdAt").value(testUser.createdAt().toString()));
+                    .andExpect(jsonPath("$.createdAt").value(testUser.createdAt().toString()))
+                    .andExpect(jsonPath("$.updatedAt").value(testUser.updatedAt().toString()));
             //verify
             verify(userService).getUserById(id);
 

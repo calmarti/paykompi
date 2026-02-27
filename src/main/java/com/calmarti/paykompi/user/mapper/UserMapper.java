@@ -26,7 +26,8 @@ public class UserMapper {
                 user.getLastName(),
                 user.getUserType(),
                 user.getUserStatus(),
-                user.getCreatedAt());
+                user.getCreatedAt(),
+                user.getUpdatedAt());
     }
 
     public static User updateEntity(User user, UpdateUserRequestDto dto){

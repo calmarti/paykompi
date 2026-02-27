@@ -14,5 +14,5 @@ public record UserResponseDto(
         String lastName,
         UserType userType,
         UserStatus userStatus,
-        Instant createdAt
-        ){}
+        Instant createdAt,
+        Instant updatedAt     ){}
