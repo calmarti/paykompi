@@ -12,6 +12,7 @@ import com.calmarti.paykompi.user.enums.UserStatus;
 import com.calmarti.paykompi.user.mapper.UserMapper;
 import com.calmarti.paykompi.user.repository.UserRepository;
 import com.calmarti.paykompi.user.service.UserService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -19,11 +20,11 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    //private PasswordEncoder passwordEncoder;
+    private PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository /*PasswordEncoder passwordEncoder*/) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        //this.passwordEncoder = passwordEncoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -39,8 +40,7 @@ public class UserServiceImpl implements UserService {
         //map dto to entity
         User user = UserMapper.toEntity(dto);
         //hash password, add it to entity
-        //String hash = passwordEncoder.encode(request.password());
-        user.setPasswordHash(dto.password());
+        user.setPasswordHash(passwordEncoder.encode(dto.password()));
         user.setUserRole(UserRole.USER);
         user.setUserStatus(UserStatus.ACTIVE);
         //save to DB
