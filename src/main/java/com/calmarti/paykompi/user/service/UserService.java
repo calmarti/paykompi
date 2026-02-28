@@ -9,7 +9,9 @@ import java.util.UUID;
 
 
 public interface UserService {
+    //TODO: Include userRole as optional request field (default = USER)
     UserResponseDto createUser(CreateUserRequestDto dto);
+    //TODO: Restrict authorization to own user and ROLE = ADMIN
     UserResponseDto getUserById(UUID id);
     void updateUserById(UUID id, UpdateUserRequestDto dto);
     //TODO: control for transition from CLOSED to ACTIVE or SUSPENDED

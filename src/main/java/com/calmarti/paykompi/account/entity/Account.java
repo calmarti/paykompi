@@ -34,6 +34,8 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
+    @Column(name="username", nullable=false)
+    private String username;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "FK_accounts_users"), nullable = false)
     private User user;

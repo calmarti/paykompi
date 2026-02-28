@@ -52,14 +52,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getUserById(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return UserMapper.toResponse(user);
     }
 
     @Override
     public void updateUserById(UUID id, UpdateUserRequestDto dto) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         UserMapper.updateEntity(user, dto);
         userRepository.save(user);
     }
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     public void changeUserStatus(UUID id, UpdateUserStatusDto dto) {
         //TODO: control for transition from CLOSED to ACTIVE or SUSPENDED
         User user = userRepository.findById(id).
-                orElseThrow(() -> new ResourceNotFoundException("Not found"));
+                orElseThrow(() -> new ResourceNotFoundException("User not found"));
         UserMapper.updateUserStatusInEntity(user, dto);
         userRepository.save(user);
     }

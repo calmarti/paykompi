@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 
+
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,18 @@ public class GlobalExceptionHandler {
                 null);
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetails);
+    }
+
+    @ExceptionHandler(CustomAccessDeniedException.class)
+    public ResponseEntity<APIErrorDetails> handleAccessDeniedException(CustomAccessDeniedException e, HttpServletRequest request){
+        APIErrorDetails errorDetails = new APIErrorDetails(
+                e.getMessage(),
+                HttpStatus.FORBIDDEN.value(),
+                request.getRequestURI(),
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorDetails);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
