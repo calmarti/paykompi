@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +17,18 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<APIErrorDetails> handleBadCredentials(BadCredentialsException e, HttpServletRequest request){
+        APIErrorDetails errorDetails = new APIErrorDetails(
+                e.getMessage(),
+                HttpStatus.UNAUTHORIZED.value(),
+                request.getRequestURI(),
+                LocalDateTime.now(),
+                null);
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorDetails);
+    }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<APIErrorDetails> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
@@ -54,7 +67,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<APIErrorDetails> handleNotFound(ResourceNotFoundException e, HttpServletRequest request) {
         APIErrorDetails errorDetails = new APIErrorDetails(
-                "Not found",
+                e.getMessage(),
                 HttpStatus.NOT_FOUND.value(),
                 request.getRequestURI(),
                 LocalDateTime.now(),
