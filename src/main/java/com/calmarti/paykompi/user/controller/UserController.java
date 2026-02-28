@@ -23,8 +23,8 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto dto){
-        UserResponseDto userResponseDto = userService.createUser(dto);
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto request){
+        UserResponseDto userResponseDto = userService.createUser(request);
         return new ResponseEntity<>(userResponseDto,HttpStatus.CREATED);
     }
 
@@ -35,15 +35,15 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @RequestBody UpdateUserRequestDto dto){
+    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @RequestBody UpdateUserRequestDto request){
         //check if following line is correct
-        userService.updateUserById(id, dto);
+        userService.updateUserById(id, request);
         return ResponseEntity.noContent().build();
     }
 
     @PatchMapping("/{id}/status")
-    public ResponseEntity<Void> updateUserStatus(@PathVariable UUID id, @RequestBody @Valid UpdateUserStatusDto dto){
-        userService.changeUserStatus(id, dto);
+    public ResponseEntity<Void> updateUserStatus(@PathVariable UUID id, @RequestBody @Valid UpdateUserStatusDto request){
+        userService.changeUserStatus(id, request);
         return ResponseEntity.noContent().build();
     }
 }
