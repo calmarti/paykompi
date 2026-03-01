@@ -4,6 +4,7 @@ package com.calmarti.paykompi.config.security;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -39,20 +40,29 @@ public class SecurityConfig {
              )
 
              .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
+                     .requestMatchers(HttpMethod.POST, "/api/v1/users")
+                     .permitAll()
+                     .requestMatchers(
                                 "/api/v1/auth/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/error/**")
                         //"/api/v1/users/**",
-                        .permitAll()
-                        .anyRequest().authenticated() //everything else requires authentication
+                     .permitAll()
+                     .requestMatchers(HttpMethod.GET,"/api/v1/accounts")
+                     .hasRole("ADMIN")
+                     .anyRequest().authenticated() //everything else requires authentication
              )
 
-            .exceptionHandling(ex -> ex
+                .exceptionHandling(ex -> ex
                         .authenticationEntryPoint((request, response, authException) ->
-                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")))
+                                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")
+                        )
+                        .accessDeniedHandler((request, response, accessDeniedException) ->
+                                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden")
+                        )
+                )
 
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 

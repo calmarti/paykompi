@@ -11,21 +11,24 @@ import com.calmarti.paykompi.common.exception.CustomAccessDeniedException;
 import com.calmarti.paykompi.common.exception.DuplicateResourceException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
 import com.calmarti.paykompi.user.entity.User;
+import com.calmarti.paykompi.user.enums.UserRole;
 import com.calmarti.paykompi.user.repository.UserRepository;
 
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.security.Principal;
+import java.util.List;
 import java.util.UUID;
+
+
+import static java.util.stream.Collectors.toList;
 
 
 @Service
 public class AccountServiceImpl implements AccountService {
 
-private final AccountRepository accountRepository;
-private final UserRepository userRepository;
+    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
 
     public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository) {
         this.accountRepository = accountRepository;
@@ -35,8 +38,8 @@ private final UserRepository userRepository;
     @Override
     public UUID createAccount(CreateAccountRequestDto dto, User user) {
         //Validate UK constraint: {"user_id", "currency"}
-        if (accountRepository.existsByUserAndCurrency(user, dto.currency())){
-            throw new DuplicateResourceException(String.format("User already has %s account",(dto.currency())));
+        if (accountRepository.existsByUserAndCurrency(user, dto.currency())) {
+            throw new DuplicateResourceException(String.format("User already has %s account", (dto.currency())));
         }
         Account account = AccountMapper.toEntity(dto, user);
         account.setBalance(BigDecimal.ZERO);
@@ -47,14 +50,23 @@ private final UserRepository userRepository;
     }
 
     @Override
-    public AccountResponseDto getAccountById(UUID accountId, User user ) {
-       Account account = accountRepository.findById(accountId)
-               .orElseThrow(()-> new ResourceNotFoundException("Account not found"));
+    public AccountResponseDto getAccountById(UUID accountId, User user) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new ResourceNotFoundException("Account not found"));
 
-       if (!account.getUser().getId().equals(user.getId())){
-           throw new CustomAccessDeniedException("User cannot access this account");
-       }
+        if (!account.getUser().getId().equals(user.getId()) && ! user.getUserRole().equals(UserRole.ADMIN)) {
+            throw new CustomAccessDeniedException("User cannot access this account");
+        }
 
-       return AccountMapper.toResponse(account);
+        return AccountMapper.toResponse(account);
+    }
+
+    @Override
+    public List<AccountResponseDto> getAllAccounts() {
+        List<AccountResponseDto> accounts = accountRepository.findAll()
+                .stream()
+                .map(((account) -> AccountMapper.toResponse(account)))
+                .collect(toList());
+        return accounts;
     }
 }

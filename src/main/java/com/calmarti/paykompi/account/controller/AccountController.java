@@ -7,12 +7,13 @@ import com.calmarti.paykompi.user.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.http.ResponseEntity.created;
 
 @RestController
 @RequestMapping("/api/v1/accounts")
@@ -34,10 +35,13 @@ public class AccountController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AccountResponseDto> getAccountById(@PathVariable("id") UUID accountId, Authentication authentication){
-        //Get principal (user) from authentication object
-        User user = (User) authentication.getPrincipal();
+    public ResponseEntity<AccountResponseDto> getAccountById(@PathVariable("id") UUID accountId, @AuthenticationPrincipal User user){
         AccountResponseDto response = accountService.getAccountById(accountId, user);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    ResponseEntity<List<AccountResponseDto>>getAllAccounts(){
+        return ResponseEntity.ok(accountService.getAllAccounts());
     }
 }
