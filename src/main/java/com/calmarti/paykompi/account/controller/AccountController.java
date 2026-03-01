@@ -2,6 +2,7 @@ package com.calmarti.paykompi.account.controller;
 
 import com.calmarti.paykompi.account.dto.AccountResponseDto;
 import com.calmarti.paykompi.account.dto.CreateAccountRequestDto;
+import com.calmarti.paykompi.account.dto.UpdateAccountStatusDto;
 import com.calmarti.paykompi.account.service.AccountService;
 import com.calmarti.paykompi.user.entity.User;
 import jakarta.validation.Valid;
@@ -43,5 +44,11 @@ public class AccountController {
     @GetMapping
     ResponseEntity<List<AccountResponseDto>>getAllAccounts(){
         return ResponseEntity.ok(accountService.getAllAccounts());
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> updateAccountStatus(@PathVariable("id") UUID accountId, @RequestBody @Valid UpdateAccountStatusDto request){
+        accountService.updateAccountStatus(accountId, request);
+        return ResponseEntity.noContent().build();
     }
 }

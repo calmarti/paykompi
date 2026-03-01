@@ -48,9 +48,10 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/error/**")
-                        //"/api/v1/users/**",
                      .permitAll()
                      .requestMatchers(HttpMethod.GET,"/api/v1/accounts")
+                     .hasRole("ADMIN")
+                     .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/*/status")
                      .hasRole("ADMIN")
                      .anyRequest().authenticated() //everything else requires authentication
              )

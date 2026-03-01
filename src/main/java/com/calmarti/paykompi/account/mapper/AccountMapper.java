@@ -3,6 +3,7 @@ package com.calmarti.paykompi.account.mapper;
 import com.calmarti.paykompi.account.dto.AccountIdResponseDto;
 import com.calmarti.paykompi.account.dto.AccountResponseDto;
 import com.calmarti.paykompi.account.dto.CreateAccountRequestDto;
+import com.calmarti.paykompi.account.dto.UpdateAccountStatusDto;
 import com.calmarti.paykompi.account.entity.Account;
 import com.calmarti.paykompi.user.entity.User;
 
@@ -34,5 +35,8 @@ public class AccountMapper {
                 account.getUpdatedAt());
     }
 
-
+    public static Account updateAccountStatusInEntity(Account account, UpdateAccountStatusDto dto){
+        account.setStatus(dto.accountStatus());
+        return account;
+    }
 }

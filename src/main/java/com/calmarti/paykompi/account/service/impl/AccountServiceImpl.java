@@ -2,6 +2,7 @@ package com.calmarti.paykompi.account.service.impl;
 
 import com.calmarti.paykompi.account.dto.AccountResponseDto;
 import com.calmarti.paykompi.account.dto.CreateAccountRequestDto;
+import com.calmarti.paykompi.account.dto.UpdateAccountStatusDto;
 import com.calmarti.paykompi.account.entity.Account;
 import com.calmarti.paykompi.account.enums.AccountStatus;
 import com.calmarti.paykompi.account.mapper.AccountMapper;
@@ -68,5 +69,12 @@ public class AccountServiceImpl implements AccountService {
                 .map(((account) -> AccountMapper.toResponse(account)))
                 .collect(toList());
         return accounts;
+    }
+
+    @Override
+    public void updateAccountStatus(UUID accountId, UpdateAccountStatusDto dto) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(()-> new ResourceNotFoundException("Account not found"));
+        accountRepository.save(AccountMapper.updateAccountStatusInEntity(account, dto));
     }
 }
