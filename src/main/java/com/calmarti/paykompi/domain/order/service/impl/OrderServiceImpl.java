@@ -3,6 +3,8 @@ package com.calmarti.paykompi.domain.order.service.impl;
 import com.calmarti.paykompi.domain.account.dto.CreateAccountRequestDto;
 import com.calmarti.paykompi.domain.order.dto.CreateOrderRequestDto;
 import com.calmarti.paykompi.domain.order.entity.Order;
+import com.calmarti.paykompi.domain.order.enums.OrderStatus;
+import com.calmarti.paykompi.domain.order.mapper.OrderMapper;
 import com.calmarti.paykompi.domain.order.repository.OrderRepository;
 import com.calmarti.paykompi.domain.order.service.OrderService;
 import com.calmarti.paykompi.domain.user.entity.User;
@@ -18,6 +20,19 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public UUID createOrder(CreateOrderRequestDto dto, User user) {
+        // TODO: POST /api/orders
+        // A BUSINESS user calls POST /api/v1/orders with an amount, currency, and description.
+        // Validations:
+        // 1. UserType = BUSINESS -> validated by Security Config
+        // 2. Amount > 0 - > validated with @Valid by means of @DecimalMin in dto
+        // TODO: 3. Merchant has account with order currency, description's length
+        // Map dto to new instance of Order
+        Order order = OrderMapper.toEntity(dto, user);
+        // Set default order_status = CRATED
+        order.setOrderStatus(OrderStatus.CREATED);
+        // Persist
+        // Returns the order ID. No money moves.
+
         return UUID.fromString("OK");
     }
 }
