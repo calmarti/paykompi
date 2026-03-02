@@ -73,7 +73,22 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
     }
 
-    //handler for bad request of type MissingServletRequestParameterException.class
+    @ExceptionHandler(BusinessRuleViolationException.class)
+    public ResponseEntity<APIErrorDetails> handleBusinessRuleViolationBadRequest(BusinessRuleViolationException e, HttpServletRequest request){
+
+        APIErrorDetails errorDetails = new APIErrorDetails(
+                e.getMessage(),
+                HttpStatus.BAD_REQUEST.value(),
+                request.getRequestURI(),
+                LocalDateTime.now(),
+                null
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorDetails);
+    }
+
+
+    //TODO: handler for bad request of type MissingServletRequestParameterException.class
 
 
 
