@@ -1,9 +1,10 @@
 package com.calmarti.paykompi.user.controller;
 
-import com.calmarti.paykompi.user.dto.UserResponseDto;
-import com.calmarti.paykompi.user.enums.UserStatus;
-import com.calmarti.paykompi.user.enums.UserType;
-import com.calmarti.paykompi.user.service.UserService;
+import com.calmarti.paykompi.domain.user.controller.UserController;
+import com.calmarti.paykompi.domain.user.dto.UserResponseDto;
+import com.calmarti.paykompi.domain.user.enums.UserStatus;
+import com.calmarti.paykompi.domain.user.enums.UserType;
+import com.calmarti.paykompi.domain.user.service.UserService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

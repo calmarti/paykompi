@@ -1,7 +1,7 @@
 package com.calmarti.paykompi.config.security;
 
 
-import com.calmarti.paykompi.user.entity.User;
+import com.calmarti.paykompi.domain.user.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;

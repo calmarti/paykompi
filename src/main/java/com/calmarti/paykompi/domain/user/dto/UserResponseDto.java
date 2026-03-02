@@ -1,0 +1,18 @@
+package com.calmarti.paykompi.domain.user.dto;
+
+import com.calmarti.paykompi.domain.user.enums.UserStatus;
+import com.calmarti.paykompi.domain.user.enums.UserType;
+
+import java.time.Instant;
+import java.util.UUID;
+
+public record UserResponseDto(
+        UUID id,
+        String username,
+        String email,
+        String firstName,
+        String lastName,
+        UserType userType,
+        UserStatus userStatus,
+        Instant createdAt,
+        Instant updatedAt     ){}

@@ -1,0 +1,49 @@
+package com.calmarti.paykompi.domain.user.controller;
+
+import com.calmarti.paykompi.domain.user.dto.CreateUserRequestDto;
+import com.calmarti.paykompi.domain.user.dto.UpdateUserRequestDto;
+import com.calmarti.paykompi.domain.user.dto.UpdateUserStatusDto;
+import com.calmarti.paykompi.domain.user.dto.UserResponseDto;
+import com.calmarti.paykompi.domain.user.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
+
+@RestController
+@RequestMapping("/api/v1/users")
+public class UserController {
+
+    private final UserService userService;
+
+    public UserController(UserService userService){
+        this.userService = userService;
+    }
+
+    @PostMapping
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto request){
+        UserResponseDto userResponseDto = userService.createUser(request);
+        return new ResponseEntity<>(userResponseDto,HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id){
+        UserResponseDto userResponseDto = userService.getUserById(id);
+        return ResponseEntity.ok(userResponseDto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @RequestBody UpdateUserRequestDto request){
+        //check if following line is correct
+        userService.updateUserById(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<Void> updateUserStatus(@PathVariable UUID id, @RequestBody @Valid UpdateUserStatusDto request){
+        userService.changeUserStatus(id, request);
+        return ResponseEntity.noContent().build();
+    }
+}
