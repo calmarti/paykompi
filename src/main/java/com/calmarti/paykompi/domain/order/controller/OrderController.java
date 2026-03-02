@@ -1,16 +1,15 @@
 package com.calmarti.paykompi.domain.order.controller;
 
 import com.calmarti.paykompi.domain.order.dto.CreateOrderRequestDto;
+import com.calmarti.paykompi.domain.order.dto.OrderResponseDto;
 import com.calmarti.paykompi.domain.order.entity.Order;
 import com.calmarti.paykompi.domain.order.service.OrderService;
 import com.calmarti.paykompi.domain.user.entity.User;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.UUID;
@@ -34,6 +33,13 @@ public class OrderController {
     }
 
     //TODO: GET /api/orders/{orderId}
+    @GetMapping("/{id}")
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable(name="id") UUID orderId, @AuthenticationPrincipal User user){
+        OrderResponseDto order = orderService.getOrderById(orderId, user);
+        return ResponseEntity.ok(order);
+    }
+
+
     //TODO: GET /api/orders?merchantId={userId} - Get all orders created by user
     //TODO: PATCH /api/orders/{orderId}
 

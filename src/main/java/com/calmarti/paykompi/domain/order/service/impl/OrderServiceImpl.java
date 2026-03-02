@@ -1,14 +1,18 @@
 package com.calmarti.paykompi.domain.order.service.impl;
 
 import com.calmarti.paykompi.common.exception.BusinessRuleViolationException;
+import com.calmarti.paykompi.common.exception.CustomAccessDeniedException;
+import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
 import com.calmarti.paykompi.domain.account.repository.AccountRepository;
 import com.calmarti.paykompi.domain.order.dto.CreateOrderRequestDto;
+import com.calmarti.paykompi.domain.order.dto.OrderResponseDto;
 import com.calmarti.paykompi.domain.order.entity.Order;
 import com.calmarti.paykompi.domain.order.enums.OrderStatus;
 import com.calmarti.paykompi.domain.order.mapper.OrderMapper;
 import com.calmarti.paykompi.domain.order.repository.OrderRepository;
 import com.calmarti.paykompi.domain.order.service.OrderService;
 import com.calmarti.paykompi.domain.user.entity.User;
+import com.calmarti.paykompi.domain.user.enums.UserRole;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -43,5 +47,15 @@ public class OrderServiceImpl implements OrderService {
         orderRepository.save(order);
         // Returns the order ID. No money moves.
         return order.getId();
+    }
+
+    @Override
+    public OrderResponseDto getOrderById(UUID id, User user) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Order not found"));
+        if (!order.getUser().getId().equals(user.getId()) && ! user.getUserRole().equals(UserRole.ADMIN)){
+            throw new CustomAccessDeniedException("User cannot access this order");
+        }
+        return OrderMapper.toResponse(order);
     }
 }
