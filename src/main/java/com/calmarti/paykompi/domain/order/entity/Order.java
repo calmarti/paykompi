@@ -33,7 +33,7 @@ private BigDecimal amount;
 @Column(name = "currency", nullable = false, length = 3)
 @Enumerated(EnumType.STRING)
 private AccountCurrency currency;
-@Column(name = "description", length = 25, nullable = false)
+@Column(name = "description", length = 150, nullable = false)
 private String description;
 @Column(name = "order_status", nullable = false)
 @Enumerated(EnumType.STRING)
