@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -32,15 +33,20 @@ public class OrderController {
         return ResponseEntity.created(location).build();
     }
 
-    //TODO: GET /api/orders/{orderId}
+    //TODO: GET /api/orders/{orderId}  - Restricted to order owner and ADMIN
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable(name="id") UUID orderId, @AuthenticationPrincipal User user){
         OrderResponseDto order = orderService.getOrderById(orderId, user);
         return ResponseEntity.ok(order);
     }
 
+    //TODO: GET /api/orders?merchantId={userId} - Get all orders created by user - Restricted to order owner and ADMIN
+    @GetMapping
+    public ResponseEntity<List<OrderResponseDto>> getAllOrdersByMerchantId(@RequestParam UUID merchantId, @AuthenticationPrincipal User user){
+        return ResponseEntity.ok(orderService.getAllOrdersByMerchantId(merchantId, user));
+    }
 
-    //TODO: GET /api/orders?merchantId={userId} - Get all orders created by user
-    //TODO: PATCH /api/orders/{orderId}
+    //TODO: PATCH /api/orders/{orderId}/status  - Restricted to order owner and ADMIN
+
 
 }

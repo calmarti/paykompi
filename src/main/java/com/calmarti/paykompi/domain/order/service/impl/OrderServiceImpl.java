@@ -15,6 +15,7 @@ import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserRole;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -57,5 +58,13 @@ public class OrderServiceImpl implements OrderService {
             throw new CustomAccessDeniedException("User cannot access this order");
         }
         return OrderMapper.toResponse(order);
+    }
+
+    @Override
+    public List<OrderResponseDto> getAllOrdersByMerchantId(UUID merchantId, User user) {
+        //TODO: validate merchantId exists
+        //TODO: validate access: user_id = merchant_id || ROLE = ADMIN (Secutity Config)
+        List <Order> orders = orderRepository.findAllByMerchantId(merchantId);
+        return List.of();
     }
 }
