@@ -1,7 +1,7 @@
 package com.calmarti.paykompi.domain.account.entity;
 
 import com.calmarti.paykompi.domain.account.enums.AccountStatus;
-import com.calmarti.paykompi.domain.account.enums.AccountCurrency;
+import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -41,7 +41,7 @@ public class Account {
     private User user;
     @Column(name = "currency", nullable = false, length = 3)
     @Enumerated(EnumType.STRING)
-    private AccountCurrency currency;
+    private Currency currency;
     @Column(name = "balance", nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
     @Column(name = "available_balance", nullable = false, precision = 19, scale = 2)

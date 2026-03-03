@@ -1,6 +1,6 @@
 package com.calmarti.paykompi.domain.order.dto;
 
-import com.calmarti.paykompi.domain.account.enums.AccountCurrency;
+import com.calmarti.paykompi.common.enums.Currency;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,7 +12,7 @@ public record CreateOrderRequestDto(
         @DecimalMin(value = "0.10", inclusive = true)
         BigDecimal amount,
         @NotNull
-        AccountCurrency currency,
+        Currency currency,
         @Size(max = 150)
         String description
 ) {

@@ -1,6 +1,6 @@
 package com.calmarti.paykompi.domain.order.entity;
 
-import com.calmarti.paykompi.domain.account.enums.AccountCurrency;
+import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.domain.order.enums.OrderStatus;
 import com.calmarti.paykompi.domain.user.entity.User;
 import jakarta.persistence.*;
@@ -32,7 +32,7 @@ private User merchant;
 private BigDecimal amount;
 @Column(name = "currency", nullable = false, length = 3)
 @Enumerated(EnumType.STRING)
-private AccountCurrency currency;
+private Currency currency;
 @Column(name = "description", length = 150)
 private String description;
 @Column(name = "order_status", nullable = false)
