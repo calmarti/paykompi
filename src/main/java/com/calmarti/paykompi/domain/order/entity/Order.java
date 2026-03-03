@@ -27,7 +27,7 @@ public class Order {
 private UUID id;
 @ManyToOne(fetch = FetchType.LAZY, optional = false)
 @JoinColumn(name="merchant_id", foreignKey = @ForeignKey(name="FK_orders_users"), nullable = false)
-private User user;
+private User merchant;
 @Column(name = "amount", nullable = false, precision = 19, scale = 2)
 private BigDecimal amount;
 @Column(name = "currency", nullable = false, length = 3)

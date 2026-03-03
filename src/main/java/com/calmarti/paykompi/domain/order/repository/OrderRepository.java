@@ -7,5 +7,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface OrderRepository extends JpaRepository<Order, UUID> {
+    public boolean existsByMerchantId(UUID merchantId);
     public List<Order> findAllByMerchantId(UUID merchantId);
 }

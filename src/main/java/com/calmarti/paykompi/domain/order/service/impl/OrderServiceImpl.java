@@ -18,10 +18,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static java.util.stream.Collectors.toList;
+
 @Service
 public class OrderServiceImpl implements OrderService {
-    private OrderRepository orderRepository;
-    private AccountRepository accountRepository;
+    private final OrderRepository orderRepository;
+    private final AccountRepository accountRepository;
 
     public OrderServiceImpl(OrderRepository orderRepository, AccountRepository accountRepository) {
         this.orderRepository = orderRepository;
@@ -29,7 +31,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public UUID createOrder(CreateOrderRequestDto dto, User user) {
+    public UUID createOrder(CreateOrderRequestDto dto, User merchant) {
         // TODO: POST /api/orders
         // A BUSINESS user calls POST /api/v1/orders with an amount, currency, and description.
         // Validations:
@@ -37,12 +39,12 @@ public class OrderServiceImpl implements OrderService {
         // 2. Amount > 0 - > validated with @Valid by means of @DecimalMin in dto
         // 3. description's length - > validated with @Valid by means of @DecimalMin in dto
         // 4. User must have an account with accountCurrency = dto.currency
-        if (! accountRepository.existsByUserAndCurrency(user,dto.currency())){
+        if (! accountRepository.existsByUserAndCurrency(merchant,dto.currency())){
             throw new BusinessRuleViolationException("Cannot create order: user does not have an account in " + dto.currency());
         }
         // Map dto to new instance of Order
-        Order order = OrderMapper.toEntity(dto, user);
-        // Set default order_status = CRATED
+        Order order = OrderMapper.toEntity(dto, merchant);
+        // Set default order_status = CREATED
         order.setOrderStatus(OrderStatus.CREATED);
         // Persist
         orderRepository.save(order);
@@ -51,20 +53,43 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto getOrderById(UUID id, User user) {
-        Order order = orderRepository.findById(id)
+    public OrderResponseDto getOrderById(UUID orderId, User merchant) {
+        Order order = orderRepository.findById(orderId)
                 .orElseThrow(()-> new ResourceNotFoundException("Order not found"));
-        if (!order.getUser().getId().equals(user.getId()) && ! user.getUserRole().equals(UserRole.ADMIN)){
+        if (!order.getMerchant().getId().equals(merchant.getId()) && ! merchant.getUserRole().equals(UserRole.ADMIN)){
             throw new CustomAccessDeniedException("User cannot access this order");
         }
         return OrderMapper.toResponse(order);
     }
 
     @Override
-    public List<OrderResponseDto> getAllOrdersByMerchantId(UUID merchantId, User user) {
-        //TODO: validate merchantId exists
-        //TODO: validate access: user_id = merchant_id || ROLE = ADMIN (Secutity Config)
-        List <Order> orders = orderRepository.findAllByMerchantId(merchantId);
-        return List.of();
+    public List<OrderResponseDto> getAllOrdersByMerchantId(UUID merchantId, User merchant) {
+       //validate access: merchant.id = order.merchant_id || ROLE = ADMIN
+        if (! merchant.getId().equals(merchantId) && ! merchant.getUserRole().equals(UserRole.ADMIN)){
+            throw new CustomAccessDeniedException("User cannot access these orders");
+        }
+        //validate merchantId exists
+        if (! orderRepository.existsByMerchantId(merchantId)){
+            throw new ResourceNotFoundException("Order not found");
+        }
+        List <OrderResponseDto> orders = orderRepository.findAllByMerchantId(merchantId)
+                .stream()
+                .map((order)-> OrderMapper.toResponse(order))
+                .toList();
+        return orders;
+    }
+
+    @Override
+    public void cancelOrder(UUID orderId, User merchant) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(()->new ResourceNotFoundException("Order not found"));
+        if (! order.getMerchant().getId().equals(merchant.getId()) && ! merchant.getUserRole().equals(UserRole.ADMIN)){
+           throw new CustomAccessDeniedException("User cannot access these orders");
+        }
+        if (order.getOrderStatus() != OrderStatus.CREATED){
+           throw new BusinessRuleViolationException("Order cannot be cancelled or is already cancelled");
+        }
+        order.setOrderStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
     }
 }

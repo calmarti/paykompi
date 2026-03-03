@@ -67,7 +67,7 @@ public class AccountServiceImpl implements AccountService {
         List<AccountResponseDto> accounts = accountRepository.findAll()
                 .stream()
                 .map(((account) -> AccountMapper.toResponse(account)))
-                .collect(toList());
+                .toList();
         return accounts;
     }
 

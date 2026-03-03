@@ -9,9 +9,9 @@ import java.util.UUID;
 
 public class OrderMapper {
 
-    public static Order toEntity(CreateOrderRequestDto dto, User user){
+    public static Order toEntity(CreateOrderRequestDto dto, User merchant){
         Order order = new Order();
-        order.setUser(user);
+        order.setMerchant(merchant);
         order.setAmount(dto.amount());
         order.setCurrency(dto.currency());
         order.setDescription(dto.description());
@@ -21,7 +21,7 @@ public class OrderMapper {
     public static OrderResponseDto toResponse(Order order){
         return new OrderResponseDto(
                 order.getId(),
-                order.getUser().getId(),
+                order.getMerchant().getId(),
                 order.getAmount(),
                 order.getCurrency(),
                 order.getDescription(),

@@ -49,7 +49,7 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/error/**")
                      .permitAll()
-                     .requestMatchers(HttpMethod.GET,"/api/v1/accounts")
+                     .requestMatchers(HttpMethod.GET,"/api/v1/accounts")     //Get all accounts
                      .hasRole("ADMIN")
                      .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/*/status")
                      .hasRole("ADMIN")

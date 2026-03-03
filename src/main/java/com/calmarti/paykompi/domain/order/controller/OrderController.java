@@ -33,20 +33,24 @@ public class OrderController {
         return ResponseEntity.created(location).build();
     }
 
-    //TODO: GET /api/orders/{orderId}  - Restricted to order owner and ADMIN
+    //GET /api/orders/{orderId}  - Restricted to order owner and ADMIN
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable(name="id") UUID orderId, @AuthenticationPrincipal User user){
-        OrderResponseDto order = orderService.getOrderById(orderId, user);
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable(name="id") UUID orderId, @AuthenticationPrincipal User merchant){
+        OrderResponseDto order = orderService.getOrderById(orderId, merchant);
         return ResponseEntity.ok(order);
     }
 
-    //TODO: GET /api/orders?merchantId={userId} - Get all orders created by user - Restricted to order owner and ADMIN
+    //GET /api/orders?merchantId={userId} - Get all orders created by user - Restricted to order owner and ADMIN
     @GetMapping
     public ResponseEntity<List<OrderResponseDto>> getAllOrdersByMerchantId(@RequestParam UUID merchantId, @AuthenticationPrincipal User user){
         return ResponseEntity.ok(orderService.getAllOrdersByMerchantId(merchantId, user));
     }
 
-    //TODO: PATCH /api/orders/{orderId}/status  - Restricted to order owner and ADMIN
-
+    //PATCH /api/v1/orders/{orderId}/cancel  - Restricted to order owner and ADMIN
+    @PatchMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelOrder(@PathVariable UUID id, @AuthenticationPrincipal User merchant){
+        orderService.cancelOrder(id, merchant);
+        return ResponseEntity.noContent().build();
+    }
 
 }
