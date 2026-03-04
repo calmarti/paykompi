@@ -47,7 +47,7 @@ public class UserControllerSliceTest {
                     "john.doe@example.com",
                     "John",
                     "Doe",
-                    UserType.PERSONAL,
+                    UserType.CUSTOMER,
                     UserStatus.ACTIVE,
                     Instant.parse("2026-02-22T11:28:04.962Z"),
                     Instant.parse("2026-XXXXXXXXXXXXXXXXXXX"));

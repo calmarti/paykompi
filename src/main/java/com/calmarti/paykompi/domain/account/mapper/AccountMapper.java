@@ -28,13 +28,13 @@ public class AccountMapper {
                 account.getCurrency(),
                 account.getBalance(),
                 account.getAvailableBalance(),
-                account.getStatus(),
+                account.getAccountStatus(),
                 account.getCreatedAt(),
                 account.getUpdatedAt());
     }
 
     public static Account updateAccountStatusInEntity(Account account, UpdateAccountStatusDto dto){
-        account.setStatus(dto.accountStatus());
+        account.setAccountStatus(dto.accountStatus());
         return account;
     }
 }

@@ -30,8 +30,11 @@ public class Transaction {
 @GeneratedValue(strategy = GenerationType.UUID)
 private UUID id;
 @ManyToOne(fetch = FetchType.LAZY, optional = false)
-@JoinColumn(name="account_id", nullable = false)
+@JoinColumn(name="account_id",  foreignKey = @ForeignKey(name = "FK_transactions_accounts"), nullable = false)
 private Account account;
+@ManyToOne(fetch = FetchType.LAZY, optional = false)
+@JoinColumn(name="payment_id",  foreignKey = @ForeignKey(name = "FK_transactions_payments"), nullable = false)
+private Payment payment;
 @Column(name="entry_type", nullable = false)
 @Enumerated(EnumType.STRING)
 private EntryType entryType;
@@ -42,9 +45,6 @@ private BigDecimal amount;
 private Currency currency;
 @Column(name="source",nullable = false)
 private Source source;
-@ManyToOne(fetch = FetchType.LAZY, optional = false)
-@JoinColumn(name="payment_id", nullable = false)
-private Payment payment;
 @Column(name="created_at", nullable = false, updatable = false)
 @CreationTimestamp
 private Instant createdAt;

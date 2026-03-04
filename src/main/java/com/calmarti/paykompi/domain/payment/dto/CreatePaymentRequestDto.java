@@ -1,11 +1,11 @@
 package com.calmarti.paykompi.domain.payment.dto;
 
+import com.calmarti.paykompi.common.enums.Currency;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 
 import java.math.BigDecimal;
-import java.util.Currency;
 import java.util.UUID;
 
 public record CreatePaymentRequestDto(
@@ -18,6 +18,6 @@ public record CreatePaymentRequestDto(
    //@DecimalMax(value = "10000000000000000.00", message = "Amount exceeds maximum limit")
    BigDecimal amount,
    @NotNull(message="Currency should be EUR, USD, GBP or CHF")
-   Currency currency
+   Currency paymentCurrency
     ) {
 }

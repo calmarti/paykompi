@@ -22,18 +22,15 @@ import java.util.List;
 import java.util.UUID;
 
 
-import static java.util.stream.Collectors.toList;
-
-
 @Service
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
-    private final UserRepository userRepository;
+    //private final UserRepository userRepository;
 
     public AccountServiceImpl(AccountRepository accountRepository, UserRepository userRepository) {
         this.accountRepository = accountRepository;
-        this.userRepository = userRepository;
+        //this.userRepository = userRepository;
     }
 
     @Override
@@ -45,7 +42,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = AccountMapper.toEntity(dto, user);
         account.setBalance(BigDecimal.ZERO);
         account.setAvailableBalance(BigDecimal.ZERO);
-        account.setStatus(AccountStatus.ACTIVE);
+        account.setAccountStatus(AccountStatus.ACTIVE);
         accountRepository.save(account);
         return AccountMapper.toIdResponse(account).id();
     }

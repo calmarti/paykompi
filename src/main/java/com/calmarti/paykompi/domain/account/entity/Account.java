@@ -48,7 +48,7 @@ public class Account {
     private BigDecimal availableBalance;
     @Column(name = "account_status", nullable = false)
     @Enumerated(EnumType.STRING)
-    private AccountStatus status;
+    private AccountStatus accountStatus;
     @Column(name = "created_at", nullable = false, updatable = false)
     @CreationTimestamp
     private Instant createdAt;
