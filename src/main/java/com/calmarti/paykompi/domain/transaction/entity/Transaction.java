@@ -23,7 +23,7 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name="TRANSACTION")
+@Table(name="TRANSACTIONS")
 
 public class Transaction {
 @Id

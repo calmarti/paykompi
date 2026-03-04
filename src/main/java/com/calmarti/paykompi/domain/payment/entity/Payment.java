@@ -5,6 +5,7 @@ import com.calmarti.paykompi.domain.account.entity.Account;
 import com.calmarti.paykompi.domain.order.entity.Order;
 import com.calmarti.paykompi.domain.payment.enums.PaymentStatus;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,9 @@ import java.util.UUID;
 //TODO: think about UK and business contraints
 
 @Entity
-@Table(name="PAYMENTS")
+@Table(name="PAYMENTS",  check = {
+        @CheckConstraint(name = "CK_accounts_amount_non_negative", constraint = "amount >= 0")
+})
 
 public class Payment {
     @Id
@@ -36,8 +39,9 @@ public class Payment {
     private Order order;
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "payer_account_id", foreignKey = @ForeignKey(name = "FK_payments_accounts"), nullable = false)
-    private Account account;
+    private Account payerAccount;
     @Column(name = "amount", nullable = false, precision = 19, scale = 2)
+    @DecimalMin(value = "0.01")
     private BigDecimal amount;
     @Column(name = "currency", nullable = false, length = 3)
     @Enumerated(EnumType.STRING)

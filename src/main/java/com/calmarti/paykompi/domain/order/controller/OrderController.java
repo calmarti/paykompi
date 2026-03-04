@@ -26,7 +26,7 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody @Valid CreateOrderRequestDto request, Authentication authentication){
+    public ResponseEntity<Void> createOrder(@RequestBody @Valid CreateOrderRequestDto request, Authentication authentication){
         User user = (User) authentication.getPrincipal();
         UUID id = orderService.createOrder(request,user);
         URI location = URI.create("/api/v1/orders" + id);
