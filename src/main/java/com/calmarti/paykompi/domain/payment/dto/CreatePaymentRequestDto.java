@@ -17,7 +17,7 @@ public record CreatePaymentRequestDto(
    @DecimalMin(value = "0.10", inclusive = true, message = "Amount must be greater than 0.10")
    //@DecimalMax(value = "10000000000000000.00", message = "Amount exceeds maximum limit")
    BigDecimal amount,
-   @NotNull
+   @NotNull(message="Currency should be EUR, USD, GBP or CHF")
    Currency currency
     ) {
 }
