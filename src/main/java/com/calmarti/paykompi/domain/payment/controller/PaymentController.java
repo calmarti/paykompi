@@ -30,4 +30,7 @@ public class PaymentController {
       URI location = URI.create("/api/v1/payments/" + id);
       return ResponseEntity.created(location).build();
     }
+
+    //TODO: GET /api/payments/{paymentId} - Only available to ADMIN
+    //TODO: GET /api/users/{userId}/payments - available to owner user and ADMIN
 }

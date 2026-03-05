@@ -30,13 +30,20 @@ public class PaymentServiceImpl implements PaymentService {
     private OrderRepository orderRepository;
     private AccountRepository accountRepository;
     private UserRepository userRepository;
+    private ExternalPaymentApiSimulator externalPaymentApiSimulator;
 
 
-    public PaymentServiceImpl(PaymentRepository paymentRepository, OrderRepository orderRepository, AccountRepository accountRepository, UserRepository userRepository) {
+    public PaymentServiceImpl(PaymentRepository paymentRepository,
+                              OrderRepository orderRepository,
+                              AccountRepository accountRepository,
+                              UserRepository userRepository,
+                              ExternalPaymentApiSimulator externalPaymentApiSimulator)
+    {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.externalPaymentApiSimulator = externalPaymentApiSimulator;
     }
 
     @Override
@@ -100,10 +107,17 @@ public class PaymentServiceImpl implements PaymentService {
         payment.setPaymentStatus(PaymentStatus.CREATED);
 //        persist payment record
         paymentRepository.save(payment);
-//        executePayment(payment)
+        try {
+            externalPaymentApiSimulator.authorizePayment();
+            payment.setPaymentStatus(PaymentStatus.APPROVED);
+            //executePayment(account, merchantAccount, Payment payment);  //TODO: merchantAccount needs to be retrieved earlier
+        }
+        catch(RuntimeException e){
+            //markPaymentFailed(UUID paymentId);
+            //throw e;
+        }
 
-
-
+        return payment.getId();
     }
 
 
