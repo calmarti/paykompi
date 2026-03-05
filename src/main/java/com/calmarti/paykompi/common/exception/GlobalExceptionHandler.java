@@ -116,6 +116,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
     }
 
+    @ExceptionHandler(ExternalPaymentException.class)
+    public ResponseEntity<APIErrorDetails> handleDuplicateException(ExternalPaymentException e, HttpServletRequest request){
+        APIErrorDetails errorDetails = new APIErrorDetails(
+                e.getMessage(),
+                HttpStatus.BAD_GATEWAY.value(),
+                request.getRequestURI(),
+                LocalDateTime.now(),
+                null
+        );
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(errorDetails);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<APIErrorDetails> handleGeneric(Exception e, HttpServletRequest request) {

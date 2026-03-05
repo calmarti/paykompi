@@ -96,11 +96,13 @@ public class PaymentServiceImpl implements PaymentService {
         }
 //        Merchant has active account in same currency
         User merchant = order.getMerchant();
-        if (! accountRepository.existsByUserIdAndCurrencyAndAccountStatus(
-                merchant.getId(), account.getCurrency(),AccountStatus.ACTIVE)
-        ) {
-            throw new BusinessRuleViolationException("Merchant account status is not 'ACTIVE' or its currency does not match");
-        }
+        Account merchantAccount =
+                accountRepository.findByUserIdAndCurrencyAndAccountStatus(
+                merchant.getId(), dto.paymentCurrency(),AccountStatus.ACTIVE)
+                        .orElseThrow(
+                                ()-> new ResourceNotFoundException(String.format(
+                                        "Merchant account with currency %s and/or status ACTIVE not found",
+                                        dto.paymentCurrency())));
 //        Map to payment entity
         Payment payment = PaymentMapper.toEntity(dto, order, account);
 //      Set payment_status = "CREATED"
@@ -108,9 +110,9 @@ public class PaymentServiceImpl implements PaymentService {
 //        persist payment record
         paymentRepository.save(payment);
         try {
-            externalPaymentApiSimulator.authorizePayment();
+            externalPaymentApiSimulator.approvePayment();
             payment.setPaymentStatus(PaymentStatus.APPROVED);
-            //executePayment(account, merchantAccount, Payment payment);  //TODO: merchantAccount needs to be retrieved earlier
+            //executePayment(account, merchantAccount, Payment payment);
         }
         catch(RuntimeException e){
             //markPaymentFailed(UUID paymentId);
@@ -123,7 +125,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public void executePayment(Account debitAccount, Account creditAccount, Payment payment) {
+    public void executePayment(Account debitAccount, Account creditAccount, Payment payment, Order order) {
 
 //        a. Debit payer account
 //        payer.balance -= amount
