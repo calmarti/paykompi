@@ -6,6 +6,7 @@ import com.calmarti.paykompi.domain.payment.entity.Payment;
 import com.calmarti.paykompi.domain.transaction.enums.EntryType;
 import com.calmarti.paykompi.domain.transaction.enums.Source;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,22 +31,23 @@ public class Transaction {
 @GeneratedValue(strategy = GenerationType.UUID)
 private UUID id;
 @ManyToOne(fetch = FetchType.LAZY, optional = false)
-@JoinColumn(name="account_id",  foreignKey = @ForeignKey(name = "FK_transactions_accounts"), nullable = false)
+@JoinColumn(name="account_id",  foreignKey = @ForeignKey(name = "FK_transactions_accounts"), nullable = false, updatable = false)
 private Account account;
 @ManyToOne(fetch = FetchType.LAZY, optional = false)
-@JoinColumn(name="payment_id",  foreignKey = @ForeignKey(name = "FK_transactions_payments"), nullable = false)
+@JoinColumn(name="payment_id",  foreignKey = @ForeignKey(name = "FK_transactions_payments"), nullable = false, updatable = false)
 private Payment payment;
-@Column(name="entry_type", nullable = false)
+@Column(name="entry_type", nullable = false, updatable = false)
 @Enumerated(EnumType.STRING)
 private EntryType entryType;
-@Column(name = "amount", nullable = false, precision = 19, scale = 2)
+@Column(name = "amount", nullable = false, precision = 19, scale = 2, updatable = false)
+@DecimalMin(value = "0.01", inclusive = true)
 private BigDecimal amount;
-@Column(name = "currency", nullable = false, length = 3)
+@Column(name = "currency", nullable = false, updatable = false)
 @Enumerated(EnumType.STRING)
 private Currency currency;
-@Column(name="source",nullable = false)
+@Column(name="source",nullable = false, updatable = false)
+@Enumerated(EnumType.STRING)
 private Source source;
-@Column(name="created_at", nullable = false, updatable = false)
 @CreationTimestamp
 private Instant createdAt;
 

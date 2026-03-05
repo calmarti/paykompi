@@ -14,10 +14,15 @@ import com.calmarti.paykompi.domain.payment.entity.Payment;
 import com.calmarti.paykompi.domain.payment.enums.PaymentStatus;
 import com.calmarti.paykompi.domain.payment.mapper.PaymentMapper;
 import com.calmarti.paykompi.domain.payment.repository.PaymentRepository;
+import com.calmarti.paykompi.domain.transaction.entity.Transaction;
+import com.calmarti.paykompi.domain.transaction.enums.EntryType;
+import com.calmarti.paykompi.domain.transaction.enums.Source;
+import com.calmarti.paykompi.domain.transaction.repository.TransactionRepository;
 import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserStatus;
 import com.calmarti.paykompi.domain.user.enums.UserType;
 import com.calmarti.paykompi.domain.user.repository.UserRepository;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +35,7 @@ public class PaymentServiceImpl implements PaymentService {
     private OrderRepository orderRepository;
     private AccountRepository accountRepository;
     private UserRepository userRepository;
+    private TransactionRepository transactionRepository;
     private ExternalPaymentApiSimulator externalPaymentApiSimulator;
 
 
@@ -37,12 +43,14 @@ public class PaymentServiceImpl implements PaymentService {
                               OrderRepository orderRepository,
                               AccountRepository accountRepository,
                               UserRepository userRepository,
+                              TransactionRepository transactionRepository,
                               ExternalPaymentApiSimulator externalPaymentApiSimulator)
     {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
+        this.transactionRepository = transactionRepository;
         this.externalPaymentApiSimulator = externalPaymentApiSimulator;
     }
 
@@ -58,7 +66,7 @@ public class PaymentServiceImpl implements PaymentService {
             throw new BusinessRuleViolationException("Cannot initiate payment of order: order status is not 'CREATED'");
         }
 //        amount == order.amount
-        if (! dto.amount().equals(order.getAmount())){
+        if ( dto.amount().compareTo(order.getAmount()) != 0){
             throw new BusinessRuleViolationException("Payment amount does not match order amount");
         }
 //        currency == order.currency
@@ -103,6 +111,9 @@ public class PaymentServiceImpl implements PaymentService {
                                 ()-> new ResourceNotFoundException(String.format(
                                         "Merchant account with currency %s and/or status ACTIVE not found",
                                         dto.paymentCurrency())));
+
+        //TODO: validation: prevent merchant paying his own order
+
 //        Map to payment entity
         Payment payment = PaymentMapper.toEntity(dto, order, account);
 //      Set payment_status = "CREATED"
@@ -112,7 +123,7 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             externalPaymentApiSimulator.approvePayment();
             payment.setPaymentStatus(PaymentStatus.APPROVED);
-            //executePayment(account, merchantAccount, Payment payment);
+            executePayment(account, merchantAccount, payment, order);
         }
         catch(RuntimeException e){
             //markPaymentFailed(UUID paymentId);
@@ -128,38 +139,43 @@ public class PaymentServiceImpl implements PaymentService {
     public void executePayment(Account debitAccount, Account creditAccount, Payment payment, Order order) {
 
 //        a. Debit payer account
-//        payer.balance -= amount
-//        payer.availableBalance -= amount
+        debitAccount.setBalance(debitAccount.getBalance().subtract(payment.getAmount()));
 //
 //        b. Credit merchant account
-//        merchant.balance += amount
-//        merchant.availableBalance += amount
+        creditAccount.setBalance(creditAccount.getBalance().add(payment.getAmount()));
 //
 //        c. Create Transaction (DEBIT)
-//                accountId = payerAccountId
-//        type = DEBIT
-//        amount = amount
-//        referenceType = PAYMENT
-//        referenceId = payment.id
-//
-//        d. Create Transaction (CREDIT)
-//                accountId = merchantAccountId
-//        type = CREDIT
-//        amount = amount
-//        referenceType = PAYMENT
-//        referenceId = payment.id
-//
-//        e. Update Payment
-//        payment.status = COMPLETED
-//
-//        f. Update Order
-//        order.status = PAID
+        Transaction debitTransaction = new Transaction();
+        debitTransaction.setAccount(debitAccount);
+        debitTransaction.setPayment(payment);
+        debitTransaction.setEntryType(EntryType.DEBIT);
+        debitTransaction.setAmount(payment.getAmount());
+        debitTransaction.setCurrency(payment.getPaymentCurrency());
+        debitTransaction.setSource(Source.PAYMENT);
+        //TODO: ask GPT meaning of this "If there is no cascade from Payment, transactions must be saved."
+        transactionRepository.save(debitTransaction);
 
-//        If any operation a-f throws then DB transaction → rollback:
-//        markPaymentFailed(paymentId)
+//        d. Create Transaction (CREDIT)
+        Transaction creditTransaction = new Transaction();
+        creditTransaction.setAccount(creditAccount);
+        creditTransaction.setPayment(payment);
+        creditTransaction.setEntryType(EntryType.CREDIT);
+        creditTransaction.setAmount(payment.getAmount());
+        creditTransaction.setCurrency(payment.getPaymentCurrency());
+        creditTransaction.setSource(Source.PAYMENT);
+        transactionRepository.save(creditTransaction);
+
+//        e. Update Payment status
+        payment.setPaymentStatus(PaymentStatus.COMPLETED);
+
+//        f. Update Order status
+         order.setOrderStatus(OrderStatus.PAID);
+
+//        If any operation a-f throws then DB transaction → rollback and payment is marked as 'FAILED'
 
     }
 
+    //TODO: markPaymentFailed must run in a new transaction (because the failure may come from a rolled-back transaction)
     @Override
     public void markPaymentFailed(UUID paymentId) {
 

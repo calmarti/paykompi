@@ -45,6 +45,7 @@ public class Account {
     @Column(name = "balance", nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
     @Column(name = "available_balance", nullable = false, precision = 19, scale = 2)
+    //TODO: remove availablaBalance here and anywhere else it appears
     private BigDecimal availableBalance;
     @Column(name = "account_status", nullable = false)
     @Enumerated(EnumType.STRING)
