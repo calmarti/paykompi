@@ -11,6 +11,8 @@ import com.calmarti.paykompi.domain.order.enums.OrderStatus;
 import com.calmarti.paykompi.domain.order.repository.OrderRepository;
 import com.calmarti.paykompi.domain.payment.dto.CreatePaymentRequestDto;
 import com.calmarti.paykompi.domain.payment.entity.Payment;
+import com.calmarti.paykompi.domain.payment.enums.PaymentStatus;
+import com.calmarti.paykompi.domain.payment.mapper.PaymentMapper;
 import com.calmarti.paykompi.domain.payment.repository.PaymentRepository;
 import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserStatus;
@@ -92,14 +94,16 @@ public class PaymentServiceImpl implements PaymentService {
         ) {
             throw new BusinessRuleViolationException("Merchant account status is not 'ACTIVE' or its currency does not match");
         }
-//        create payment record (payment_status = "CREATED")
-
+//        Map to payment entity
+        Payment payment = PaymentMapper.toEntity(dto, order, account);
+//      Set payment_status = "CREATED"
+        payment.setPaymentStatus(PaymentStatus.CREATED);
 //        persist payment record
+        paymentRepository.save(payment);
 //        executePayment(payment)
 
 
 
-        return null;
     }
 
 
