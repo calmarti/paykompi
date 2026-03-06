@@ -43,7 +43,7 @@ public class Payment {
     @Column(name = "amount", nullable = false, precision = 19, scale = 2)
     @DecimalMin(value = "0.01")
     private BigDecimal amount;
-    @Column(name = "currency", nullable = false, length = 3)
+    @Column(name = "payment_currency", nullable = false, length = 3)
     @Enumerated(EnumType.STRING)
     private Currency paymentCurrency;
     @Column(name = "payment_status", nullable = false)

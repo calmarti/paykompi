@@ -29,7 +29,7 @@ public class OrderController {
     public ResponseEntity<Void> createOrder(@RequestBody @Valid CreateOrderRequestDto request, Authentication authentication){
         User user = (User) authentication.getPrincipal();
         UUID id = orderService.createOrder(request,user);
-        URI location = URI.create("/api/v1/orders" + id);
+        URI location = URI.create("/api/v1/orders/" + id);
         return ResponseEntity.created(location).build();
     }
 
