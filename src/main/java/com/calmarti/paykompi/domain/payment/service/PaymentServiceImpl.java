@@ -10,6 +10,7 @@ import com.calmarti.paykompi.domain.order.entity.Order;
 import com.calmarti.paykompi.domain.order.enums.OrderStatus;
 import com.calmarti.paykompi.domain.order.repository.OrderRepository;
 import com.calmarti.paykompi.domain.payment.dto.CreatePaymentRequestDto;
+import com.calmarti.paykompi.domain.payment.dto.PaymentResponseDto;
 import com.calmarti.paykompi.domain.payment.entity.Payment;
 import com.calmarti.paykompi.domain.payment.enums.PaymentStatus;
 import com.calmarti.paykompi.domain.payment.mapper.PaymentMapper;
@@ -140,10 +141,15 @@ public class PaymentServiceImpl implements PaymentService {
         return payment.getId();
     }
 
-
-//    Final Payment state possibilities
+    //    Final Payment state possibilities
 //CREATED - APPROVED - COMPLETED
 //CREATED - FAILED (approval failed)
 //CREATED - APPROVED - FAILED (executePayment failed for some reason)
+
+
+    @Override
+    public PaymentResponseDto getPaymentById(UUID id) {
+        return null;
+    }
 
 }
