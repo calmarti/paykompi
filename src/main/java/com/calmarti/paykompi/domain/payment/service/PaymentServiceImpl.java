@@ -22,7 +22,6 @@ import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserStatus;
 import com.calmarti.paykompi.domain.user.enums.UserType;
 import com.calmarti.paykompi.domain.user.repository.UserRepository;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,12 +30,12 @@ import java.util.UUID;
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
-    private PaymentRepository paymentRepository;
-    private OrderRepository orderRepository;
-    private AccountRepository accountRepository;
-    private UserRepository userRepository;
-    private TransactionRepository transactionRepository;
-    private ExternalPaymentApiSimulator externalPaymentApiSimulator;
+    private final PaymentRepository paymentRepository;
+    private final OrderRepository orderRepository;
+    private final AccountRepository accountRepository;
+    private final UserRepository userRepository;
+    private final TransactionRepository transactionRepository;
+    private final ExternalPaymentApiSimulator externalPaymentApiSimulator;
 
 
     public PaymentServiceImpl(PaymentRepository paymentRepository,
@@ -112,7 +111,6 @@ public class PaymentServiceImpl implements PaymentService {
                                         "Merchant account with currency %s and/or status ACTIVE not found",
                                         dto.paymentCurrency())));
 
-        //TODO: validation: prevent merchant paying his own order
 
 //        Map to payment entity
         Payment payment = PaymentMapper.toEntity(dto, order, account);

@@ -54,7 +54,7 @@ public class SecurityConfig {
                      .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/*/status")
                      .hasRole("ADMIN")
                      .requestMatchers(HttpMethod.POST,"/api/v1/orders")
-                     .hasRole("BUSINESS")
+                     .hasRole("MERCHANT")
                      .anyRequest().authenticated() //everything else requires authentication
              )
 
