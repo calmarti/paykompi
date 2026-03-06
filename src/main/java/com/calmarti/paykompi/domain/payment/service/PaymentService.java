@@ -10,7 +10,4 @@ import java.util.UUID;
 
 public interface PaymentService {
     public UUID createPayment(CreatePaymentRequestDto dto, User payer);
-    public void executePayment(Account debitAccount, Account creditAccount, Payment payment, Order order);
-    public void markPaymentFailed(UUID paymentId);
-
 }

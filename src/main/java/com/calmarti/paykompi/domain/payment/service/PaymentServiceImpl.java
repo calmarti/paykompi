@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+
 @Service
 public class PaymentServiceImpl implements PaymentService {
 
@@ -36,14 +38,14 @@ public class PaymentServiceImpl implements PaymentService {
     private final UserRepository userRepository;
     private final TransactionRepository transactionRepository;
     private final ExternalPaymentApiSimulator externalPaymentApiSimulator;
-
+    private final PaymentFailureService paymentFailureService;
 
     public PaymentServiceImpl(PaymentRepository paymentRepository,
                               OrderRepository orderRepository,
                               AccountRepository accountRepository,
                               UserRepository userRepository,
                               TransactionRepository transactionRepository,
-                              ExternalPaymentApiSimulator externalPaymentApiSimulator)
+                              ExternalPaymentApiSimulator externalPaymentApiSimulator, PaymentFailureService paymentFailureService)
     {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
@@ -51,9 +53,11 @@ public class PaymentServiceImpl implements PaymentService {
         this.userRepository = userRepository;
         this.transactionRepository = transactionRepository;
         this.externalPaymentApiSimulator = externalPaymentApiSimulator;
+        this.paymentFailureService = paymentFailureService;
     }
 
     @Override
+    @Transactional
     public UUID createPayment(CreatePaymentRequestDto dto, User payer) {
         //validations:
         //ORDER
@@ -117,23 +121,25 @@ public class PaymentServiceImpl implements PaymentService {
 //      Set payment_status = "CREATED"
         payment.setPaymentStatus(PaymentStatus.CREATED);
 //        persist payment record
-        paymentRepository.save(payment);
+        paymentRepository.saveAndFlush(payment);
+
+//      Simulation of approval / failure to approve
+//      Execution / failure to execute;
         try {
             externalPaymentApiSimulator.approvePayment();
             payment.setPaymentStatus(PaymentStatus.APPROVED);
             executePayment(account, merchantAccount, payment, order);
         }
         catch(RuntimeException e){
-            //markPaymentFailed(UUID paymentId);
-            //throw e;
+            paymentFailureService.markPaymentFailed(payment.getId());
+        throw e;
         }
 
         return payment.getId();
     }
 
 
-    @Override
-    @Transactional
+
     public void executePayment(Account debitAccount, Account creditAccount, Payment payment, Order order) {
 
 //        a. Debit payer account
@@ -173,26 +179,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     }
 
-    //TODO: markPaymentFailed must run in a new transaction (because the failure may come from a rolled-back transaction)
-    @Override
-    public void markPaymentFailed(UUID paymentId) {
-
-    }
 
 
 
-//    Final state possibilities
-//            Success
-//    Payment.status = COMPLETED
-//    Order.status = PAID
-//    Transactions created
-//    Balances updated
 
-//            Failure
-//    Payment.status = FAILED
-//    Order.status unchanged
-//    No balance changes
-//    No transactions created
-
+//    Final Payment state possibilities
+//CREATED - APPROVED - COMPLETED
+//CREATED - FAILED (approval failed)
+//CREATED - APPROVED - FAILED (executePayment failed for some reason)
 
 }
