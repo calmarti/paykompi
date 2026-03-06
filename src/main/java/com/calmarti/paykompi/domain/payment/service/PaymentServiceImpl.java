@@ -36,28 +36,29 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepository;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
-    private final TransactionRepository transactionRepository;
+   // private final TransactionRepository transactionRepository;
     private final ExternalPaymentApiSimulator externalPaymentApiSimulator;
     private final PaymentFailureService paymentFailureService;
+    private final PaymentExecutionService paymentExecutionService;
 
     public PaymentServiceImpl(PaymentRepository paymentRepository,
                               OrderRepository orderRepository,
                               AccountRepository accountRepository,
                               UserRepository userRepository,
                               TransactionRepository transactionRepository,
-                              ExternalPaymentApiSimulator externalPaymentApiSimulator, PaymentFailureService paymentFailureService)
+                              ExternalPaymentApiSimulator externalPaymentApiSimulator, PaymentFailureService paymentFailureService, PaymentExecutionService paymentExecutionService)
     {
         this.paymentRepository = paymentRepository;
         this.orderRepository = orderRepository;
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
-        this.transactionRepository = transactionRepository;
+        //this.transactionRepository = transactionRepository;
         this.externalPaymentApiSimulator = externalPaymentApiSimulator;
         this.paymentFailureService = paymentFailureService;
+        this.paymentExecutionService = paymentExecutionService;
     }
 
     @Override
-    @Transactional
     public UUID createPayment(CreatePaymentRequestDto dto, User payer) {
         //validations:
         //ORDER
@@ -128,59 +129,16 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             externalPaymentApiSimulator.approvePayment();
             payment.setPaymentStatus(PaymentStatus.APPROVED);
-            executePayment(account, merchantAccount, payment, order);
+            paymentExecutionService.executePayment(account, merchantAccount, payment, order);
         }
-        catch(RuntimeException e){
+        catch(RuntimeException exception){
             paymentFailureService.markPaymentFailed(payment.getId());
-        throw e;
+        //TODO: only ExternalPaymentException is being handled (BAD_GATEWAY), all other execution errors will throw 500
+        throw exception;
         }
 
         return payment.getId();
     }
-
-
-
-    public void executePayment(Account debitAccount, Account creditAccount, Payment payment, Order order) {
-
-//        a. Debit payer account
-        debitAccount.setBalance(debitAccount.getBalance().subtract(payment.getAmount()));
-//
-//        b. Credit merchant account
-        creditAccount.setBalance(creditAccount.getBalance().add(payment.getAmount()));
-//
-//        c. Create Transaction (DEBIT)
-        Transaction debitTransaction = new Transaction();
-        debitTransaction.setAccount(debitAccount);
-        debitTransaction.setPayment(payment);
-        debitTransaction.setEntryType(EntryType.DEBIT);
-        debitTransaction.setAmount(payment.getAmount());
-        debitTransaction.setCurrency(payment.getPaymentCurrency());
-        debitTransaction.setSource(Source.PAYMENT);
-        //TODO: ask GPT meaning of this "If there is no cascade from Payment, transactions must be saved."
-        transactionRepository.save(debitTransaction);
-
-//        d. Create Transaction (CREDIT)
-        Transaction creditTransaction = new Transaction();
-        creditTransaction.setAccount(creditAccount);
-        creditTransaction.setPayment(payment);
-        creditTransaction.setEntryType(EntryType.CREDIT);
-        creditTransaction.setAmount(payment.getAmount());
-        creditTransaction.setCurrency(payment.getPaymentCurrency());
-        creditTransaction.setSource(Source.PAYMENT);
-        transactionRepository.save(creditTransaction);
-
-//        e. Update Payment status
-        payment.setPaymentStatus(PaymentStatus.COMPLETED);
-
-//        f. Update Order status
-         order.setOrderStatus(OrderStatus.PAID);
-
-//        If any operation a-f throws then DB transaction → rollback and payment is marked as 'FAILED'
-
-    }
-
-
-
 
 
 //    Final Payment state possibilities
