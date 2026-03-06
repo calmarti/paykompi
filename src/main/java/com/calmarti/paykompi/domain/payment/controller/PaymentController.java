@@ -30,14 +30,17 @@ public class PaymentController {
       return ResponseEntity.created(location).build();
     }
 
-    //TODO: GET /api/payments/{paymentId} - Only available to ADMIN
+    //TODO: GET /api/payments/{paymentId} - Only available to owner payer and to ADMIN
     @GetMapping("/{id}")
-    ResponseEntity<PaymentResponseDto> getPaymentById(@PathVariable UUID id){
-        PaymentResponseDto response = paymentService.getPaymentById(id);
+    ResponseEntity<PaymentResponseDto> getPaymentById(@PathVariable UUID id, @AuthenticationPrincipal User user){
+        PaymentResponseDto response = paymentService.getPaymentById(id, user);
         return ResponseEntity.ok(response);
     }
 
-    //TODO: GET /api/users/{userId}/payments - available to owner user and ADMIN
+    //TODO: GET /api/users/ (all payments) - available only to ADMIN
+
+    //TODO: GET /api/users/{userId}/payments - available to owner payer and ADMIN
+
 
 
 }

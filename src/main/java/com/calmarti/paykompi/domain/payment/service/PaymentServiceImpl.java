@@ -15,22 +15,21 @@ import com.calmarti.paykompi.domain.payment.entity.Payment;
 import com.calmarti.paykompi.domain.payment.enums.PaymentStatus;
 import com.calmarti.paykompi.domain.payment.mapper.PaymentMapper;
 import com.calmarti.paykompi.domain.payment.repository.PaymentRepository;
-import com.calmarti.paykompi.domain.transaction.entity.Transaction;
-import com.calmarti.paykompi.domain.transaction.enums.EntryType;
-import com.calmarti.paykompi.domain.transaction.enums.Source;
 import com.calmarti.paykompi.domain.transaction.repository.TransactionRepository;
 import com.calmarti.paykompi.domain.user.entity.User;
+import com.calmarti.paykompi.domain.user.enums.UserRole;
 import com.calmarti.paykompi.domain.user.enums.UserStatus;
 import com.calmarti.paykompi.domain.user.enums.UserType;
 import com.calmarti.paykompi.domain.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
-import static org.springframework.transaction.annotation.Propagation.REQUIRES_NEW;
+import lombok.extern.slf4j.Slf4j;
+
 
 @Service
+@Slf4j
 public class PaymentServiceImpl implements PaymentService {
 
     private final PaymentRepository paymentRepository;
@@ -147,9 +146,16 @@ public class PaymentServiceImpl implements PaymentService {
 //CREATED - APPROVED - FAILED (executePayment failed for some reason)
 
 
+
     @Override
-    public PaymentResponseDto getPaymentById(UUID id) {
-        return null;
+    public PaymentResponseDto getPaymentById(UUID id, User user) {
+        log.debug(">>> getPaymentById called, user role: {}", user.getUserRole());
+        Payment payment = paymentRepository.findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("Payment not found"));
+        if (! payment.getPayerAccount().getUser().getId().equals(user.getId()) && ! user.getUserRole().equals(UserRole.ADMIN)) {
+            throw new CustomAccessDeniedException("User cannot access this account");
+        }
+        return PaymentMapper.toResponse(payment);
     }
 
 }

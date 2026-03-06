@@ -53,19 +53,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public OrderResponseDto getOrderById(UUID orderId, User merchant) {
+    public OrderResponseDto getOrderById(UUID orderId, User user) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(()-> new ResourceNotFoundException("Order not found"));
-        if (!order.getMerchant().getId().equals(merchant.getId()) && ! merchant.getUserRole().equals(UserRole.ADMIN)){
+        if (!order.getMerchant().getId().equals(user.getId()) && ! user.getUserRole().equals(UserRole.ADMIN)){
             throw new CustomAccessDeniedException("User cannot access this order");
         }
         return OrderMapper.toResponse(order);
     }
 
     @Override
-    public List<OrderResponseDto> getAllOrdersByMerchantId(UUID merchantId, User merchant) {
+    public List<OrderResponseDto> getAllOrdersByMerchantId(UUID merchantId, User user) {
        //validate access: merchant.id = order.merchant_id || ROLE = ADMIN
-        if (! merchant.getId().equals(merchantId) && ! merchant.getUserRole().equals(UserRole.ADMIN)){
+        if (! user.getId().equals(merchantId) && ! user.getUserRole().equals(UserRole.ADMIN)){
             throw new CustomAccessDeniedException("User cannot access these orders");
         }
         //validate merchantId exists

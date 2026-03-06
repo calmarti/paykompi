@@ -11,5 +11,5 @@ import java.util.UUID;
 
 public interface PaymentService {
     public UUID createPayment(CreatePaymentRequestDto dto, User payer);
-    public PaymentResponseDto getPaymentById(UUID id);
+    public PaymentResponseDto getPaymentById(UUID id, User user);
 }
