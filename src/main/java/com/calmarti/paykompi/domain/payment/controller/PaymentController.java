@@ -6,12 +6,17 @@ import com.calmarti.paykompi.domain.payment.entity.Payment;
 import com.calmarti.paykompi.domain.payment.service.PaymentService;
 import com.calmarti.paykompi.domain.user.entity.User;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 import java.util.UUID;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("api/v1/payments")
@@ -34,12 +39,15 @@ public class PaymentController {
     @GetMapping("/{id}")
     ResponseEntity<PaymentResponseDto> getPaymentById(@PathVariable UUID id, @AuthenticationPrincipal User user){
         PaymentResponseDto response = paymentService.getPaymentById(id, user);
-        return ResponseEntity.ok(response);
+        return ok(response);
     }
 
-    //TODO: GET /api/users/ (all payments) - available only to ADMIN
-
-    //TODO: GET /api/users/{userId}/payments - available to owner payer and ADMIN
+    //TODO: GET /api/users/ (all payments with pagination and ?payerAccountId={userId) - available only to ADMIN
+    @GetMapping
+    ResponseEntity<Page<PaymentResponseDto>> getAllPayments(@RequestParam(required = false) UUID accountId, Pageable pageable ){
+        Page<PaymentResponseDto> response = paymentService.getAllPayments(accountId, pageable);
+        return ResponseEntity.ok(response);
+    }
 
 
 

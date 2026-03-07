@@ -21,6 +21,8 @@ import com.calmarti.paykompi.domain.user.enums.UserRole;
 import com.calmarti.paykompi.domain.user.enums.UserStatus;
 import com.calmarti.paykompi.domain.user.enums.UserType;
 import com.calmarti.paykompi.domain.user.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -158,4 +160,16 @@ public class PaymentServiceImpl implements PaymentService {
         return PaymentMapper.toResponse(payment);
     }
 
+    @Override
+    //TODO: page = 1 & size = 4 returns empty; page = 1 & size = 3 returns 1 object, why?
+    public Page<PaymentResponseDto> getAllPayments(UUID accountId, Pageable pageable) {
+        Page<Payment> paginatedPayment;
+        if (accountId != null){
+           paginatedPayment = paymentRepository.findByPayerAccount_Id(accountId, pageable);
+        }
+        else{
+           paginatedPayment = paymentRepository.findAll(pageable);
+        }
+        return paginatedPayment.map((payment)-> PaymentMapper.toResponse(payment));
+    }
 }
