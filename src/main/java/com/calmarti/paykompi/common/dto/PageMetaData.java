@@ -6,13 +6,13 @@ import org.springframework.data.domain.Page;
 @Getter
 public class PageMetaData {
 
-    private int page;
-    private int size;
-    private long totalItems;
-    private int totalPages;
-    private boolean hasNext;
-    private boolean hasPrevious;
-    private boolean sorted;
+    private final int page;
+    private final int size;
+    private final long totalItems;
+    private final int totalPages;
+    private final boolean hasNext;
+    private final boolean hasPrevious;
+    private final boolean sorted;
 
     public PageMetaData(Page<?> pageData) {
         this.page = pageData.getNumber() + 1;
