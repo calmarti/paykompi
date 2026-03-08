@@ -1,5 +1,6 @@
 package com.calmarti.paykompi.domain.payment.service;
 
+import com.calmarti.paykompi.common.dto.CustomPage;
 import com.calmarti.paykompi.common.exception.BusinessRuleViolationException;
 import com.calmarti.paykompi.common.exception.CustomAccessDeniedException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
@@ -160,16 +161,20 @@ public class PaymentServiceImpl implements PaymentService {
         return PaymentMapper.toResponse(payment);
     }
 
-    @Override
+
     //TODO: page = 1 & size = 4 returns empty; page = 1 & size = 3 returns 1 object, why?
-    public Page<PaymentResponseDto> getAllPayments(UUID accountId, Pageable pageable) {
-        Page<Payment> paginatedPayment;
+    @Override
+    public CustomPage<PaymentResponseDto> getAllPayments(UUID accountId, Pageable pageable) {
+        Page<PaymentResponseDto> paginatedPayment;
         if (accountId != null){
-           paginatedPayment = paymentRepository.findByPayerAccount_Id(accountId, pageable);
+           paginatedPayment = paymentRepository.findByPayerAccount_Id(accountId, pageable)
+                   .map((payment)-> PaymentMapper.toResponse(payment));
         }
         else{
-           paginatedPayment = paymentRepository.findAll(pageable);
+           paginatedPayment = paymentRepository.findAll(pageable)
+                   .map((payment)-> PaymentMapper.toResponse(payment));
         }
-        return paginatedPayment.map((payment)-> PaymentMapper.toResponse(payment));
+        CustomPage<PaymentResponseDto> customPaginatedPayment = new CustomPage<>(paginatedPayment);
+        return customPaginatedPayment;
     }
 }
