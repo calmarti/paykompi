@@ -57,6 +57,8 @@ public class SecurityConfig {
                      .hasRole("MERCHANT")
                      .requestMatchers(HttpMethod.GET,"/api/v1/payments")     //Get all payments
                      .hasRole("ADMIN")
+                     .requestMatchers(HttpMethod.GET,"/api/v1/transactions/**")
+                     .hasRole("ADMIN")
                      .anyRequest().authenticated() //everything else requires authentication
              )
 

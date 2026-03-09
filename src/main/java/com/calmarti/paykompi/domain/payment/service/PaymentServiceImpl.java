@@ -120,7 +120,7 @@ public class PaymentServiceImpl implements PaymentService {
                                         dto.paymentCurrency())));
 
 
-//        Map to payment entity
+//      Map to payment entity
         Payment payment = PaymentMapper.toEntity(dto, order, account);
 //      Set payment_status = "CREATED"
         payment.setPaymentStatus(PaymentStatus.CREATED);
@@ -144,9 +144,9 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     //    Final Payment state possibilities
-//CREATED - APPROVED - COMPLETED
-//CREATED - FAILED (approval failed)
-//CREATED - APPROVED - FAILED (executePayment failed for some reason)
+    //CREATED - APPROVED - COMPLETED
+    //CREATED - FAILED (approval failed)
+    //CREATED - APPROVED - FAILED (executePayment failed for some reason)
 
 
 
@@ -162,7 +162,6 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
 
-    //TODO: page = 1 & size = 4 returns empty; page = 1 & size = 3 returns 1 object, why?
     @Override
     public CustomPage<PaymentResponseDto> getAllPayments(UUID accountId, Pageable pageable) {
         Page<PaymentResponseDto> paginatedPayment;
