@@ -42,7 +42,8 @@ public class PaymentController {
         return ok(response);
     }
 
-    //GET /api/v1/payments (all payments with pagination and ?payerAccountId={userId) - available only to ADMIN
+    //restricted to ADMIN
+    //TODO: refactor getAllPayments service to allow filtering by: orderId, paymentCurrency, paymentStatus
     @GetMapping
     ResponseEntity<CustomPage<PaymentResponseDto>> getAllPayments(@RequestParam(required = false) UUID accountId, Pageable pageable ){
         CustomPage<PaymentResponseDto> response = paymentService.getAllPayments(accountId, pageable);

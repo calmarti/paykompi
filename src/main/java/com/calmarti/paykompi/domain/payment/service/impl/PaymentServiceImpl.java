@@ -159,8 +159,8 @@ public class PaymentServiceImpl implements PaymentService {
         log.debug(">>> getPaymentById called, user role: {}", user.getUserRole());
         Payment payment = paymentRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("Payment not found"));
-        if (! payment.getPayerAccount().getUser().getId().equals(user.getId()) && ! user.getUserRole().equals(UserRole.ADMIN)) {
-            throw new CustomAccessDeniedException("User cannot access this account");
+        if (! payment.getPayerAccount().getUser().getId().equals(user.getId()) &&  user.getUserRole() != UserRole.ADMIN ) {
+            throw new CustomAccessDeniedException("User cannot access this payment");
         }
         return PaymentMapper.toResponse(payment);
     }
