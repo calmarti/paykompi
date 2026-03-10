@@ -60,9 +60,6 @@ public class SecurityConfig {
                      .requestMatchers(HttpMethod.GET,"/api/v1/transactions/**")
                      .hasRole("ADMIN")
 
-                     .requestMatchers(HttpMethod.POST,"/api/v1/orders")
-                     .hasRole("MERCHANT")
-
                      .requestMatchers(HttpMethod.POST, "/api/v1/accounts")
                      .hasRole("ACTIVE")
                      .requestMatchers(HttpMethod.GET, "/api/v1/accounts/**")

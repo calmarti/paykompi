@@ -34,14 +34,14 @@ public class OrderController {
         return ResponseEntity.created(location).build();
     }
 
-    //GET /api/orders/{orderId}  - Restricted to order owner and ADMIN
+    //restricted to order owner and ADMIN
     @GetMapping("/{id}")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable(name="id") UUID orderId, @AuthenticationPrincipal User merchant){
         OrderResponseDto order = orderService.getOrderById(orderId, merchant);
         return ResponseEntity.ok(order);
     }
 
-    //TODO: refactor: remove the specificity of "by merchantId" and just add pagination and filters for all relevant fields (not just merchantId)
+    //TODO: restructure with pagination and filters for all relevant fields (not just merchantId) - Restricted to order owner and ADMIN
     //GET /api/orders?merchantId={userId} - Get all orders created by user - Restricted to order owner and ADMIN
     @GetMapping
     public ResponseEntity<List<OrderResponseDto>> getAllOrdersByMerchantId(@RequestParam UUID merchantId, @AuthenticationPrincipal User user){

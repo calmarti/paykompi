@@ -13,6 +13,7 @@ import com.calmarti.paykompi.domain.order.repository.OrderRepository;
 import com.calmarti.paykompi.domain.order.service.OrderService;
 import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserRole;
+import com.calmarti.paykompi.domain.user.enums.UserType;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,7 +35,10 @@ public class OrderServiceImpl implements OrderService {
     public UUID createOrder(CreateOrderRequestDto dto, User merchant) {
         // A MERCHANT user calls POST /api/v1/orders with an amount, currency, and description.
         // Validations:
-        // 1. UserType = MERCHANT -> validated by Security Config
+        // 1. UserType = MERCHANT
+        if (merchant.getUserType() != UserType.MERCHANT){
+            throw new BusinessRuleViolationException("User type is not MERCHANT");
+        }
         // 2. Amount > 0 - > validated with @Valid by means of @DecimalMin in dto
         // 3. description's length - > validated with @Valid by means of @DecimalMin in dto
         // 4. User must have an account with accountCurrency = dto.currency
