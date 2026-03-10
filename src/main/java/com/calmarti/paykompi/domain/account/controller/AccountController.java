@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 
+//For endpoints available to users with role = USER, access requires status = ACTIVE
 @RestController
 @RequestMapping("/api/v1/accounts")
 public class AccountController {
@@ -26,6 +27,8 @@ public class AccountController {
         this.accountService = accountService;
     }
 
+
+    //requires authentication of (active) user
     @PostMapping
     public ResponseEntity<Void> createAccount(@RequestBody @Valid CreateAccountRequestDto request, Authentication authentication) {
         //Get principal (user) from authentication object
@@ -35,6 +38,7 @@ public class AccountController {
         return ResponseEntity.created(location).build();
     }
 
+    //requires (active) user to be owner of account OR role = ADMIN
     @GetMapping("/{id}")
     public ResponseEntity<AccountResponseDto> getAccountById(@PathVariable("id") UUID accountId, @AuthenticationPrincipal User user){
         AccountResponseDto response = accountService.getAccountById(accountId, user);
@@ -42,14 +46,16 @@ public class AccountController {
     }
 
     //TODO: implement filters and pagination
-    @GetMapping     //available only to ADMIN
+    //restricted to role = ADMIN
+    @GetMapping
     ResponseEntity<List<AccountResponseDto>>getAllAccounts(){
         return ResponseEntity.ok(accountService.getAllAccounts());
     }
 
-    @PatchMapping("/{id}/status")   //available only to ADMIN
+    //restricted to role = ADMIN
+    @PatchMapping("/{id}/status")
     public ResponseEntity<Void> updateAccountStatus(@PathVariable("id") UUID accountId, @RequestBody @Valid UpdateAccountStatusDto request){
-        accountService.updateAccountStatus(accountId, request);
+        accountService.changeAccountStatus(accountId, request);
         return ResponseEntity.noContent().build();
     }
 }

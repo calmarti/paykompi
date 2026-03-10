@@ -4,10 +4,12 @@ import com.calmarti.paykompi.domain.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.domain.user.dto.UpdateUserRequestDto;
 import com.calmarti.paykompi.domain.user.dto.UpdateUserStatusDto;
 import com.calmarti.paykompi.domain.user.dto.UserResponseDto;
+import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -22,6 +24,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    //Public endpoint
     @PostMapping
     public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto request){
         UserResponseDto userResponseDto = userService.createUser(request);
@@ -29,21 +32,38 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id){
-        UserResponseDto userResponseDto = userService.getUserById(id);
+    //restricted ONLY to own user
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id, Authentication authentication){
+        //Get principal (user) from authentication object
+        User authenticatedUser = (User) authentication.getPrincipal();
+        UserResponseDto userResponseDto = userService.getUserById(id, authenticatedUser);
         return ResponseEntity.ok(userResponseDto);
     }
 
+
+    //restricted ONLY to own user (Forbidden for role = ADMIN!)
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @RequestBody UpdateUserRequestDto request){
-        //check if following line is correct
-        userService.updateUserById(id, request);
+    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @RequestBody UpdateUserRequestDto request, Authentication authentication){
+        User authenticatedUser = (User) authentication.getPrincipal();
+        userService.updateUserById(id, request, authenticatedUser);
         return ResponseEntity.noContent().build();
     }
 
+      //restricted to role = ADMIN
     @PatchMapping("/{id}/status")
     public ResponseEntity<Void> updateUserStatus(@PathVariable UUID id, @RequestBody @Valid UpdateUserStatusDto request){
         userService.changeUserStatus(id, request);
+        return ResponseEntity.noContent().build();
+    }
+
+    //TODO: implement GET all users with pagination and filters (for completeness)  - restricted to role = ADMIN
+
+
+    //restricted to own user and role = ADMIN
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id, Authentication authentication){
+        User authenticatedUser = (User) authentication.getPrincipal();
+        userService.deleteUser(id, authenticatedUser);
         return ResponseEntity.noContent().build();
     }
 }

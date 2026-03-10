@@ -1,5 +1,6 @@
 package com.calmarti.paykompi.domain.account.service.impl;
 
+import com.calmarti.paykompi.common.exception.BusinessRuleViolationException;
 import com.calmarti.paykompi.domain.account.dto.AccountResponseDto;
 import com.calmarti.paykompi.domain.account.dto.CreateAccountRequestDto;
 import com.calmarti.paykompi.domain.account.dto.UpdateAccountStatusDto;
@@ -13,6 +14,7 @@ import com.calmarti.paykompi.common.exception.DuplicateResourceException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
 import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserRole;
+import com.calmarti.paykompi.domain.user.enums.UserStatus;
 import com.calmarti.paykompi.domain.user.repository.UserRepository;
 
 import org.springframework.stereotype.Service;
@@ -68,9 +70,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updateAccountStatus(UUID accountId, UpdateAccountStatusDto dto) {
+    public void changeAccountStatus(UUID accountId, UpdateAccountStatusDto dto) {
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(()-> new ResourceNotFoundException("Account not found"));
+        if (account.getAccountStatus().equals(AccountStatus.CLOSED)){
+            throw new BusinessRuleViolationException("Invalid transition: cannot activate / freeze a closed account");
+        }
         accountRepository.save(AccountMapper.updateAccountStatusInEntity(account, dto));
     }
 }

@@ -4,14 +4,15 @@ import com.calmarti.paykompi.domain.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.domain.user.dto.UpdateUserRequestDto;
 import com.calmarti.paykompi.domain.user.dto.UpdateUserStatusDto;
 import com.calmarti.paykompi.domain.user.dto.UserResponseDto;
+import com.calmarti.paykompi.domain.user.entity.User;
 
 import java.util.UUID;
 
 
 public interface UserService {
-     //TODO: Include userRole as optional request field (default = USER) => refactor dtos, mapper, user service (maybe it's already done)
     UserResponseDto createUser(CreateUserRequestDto dto);
-    UserResponseDto getUserById(UUID id);
-    void updateUserById(UUID id, UpdateUserRequestDto dto);
+    UserResponseDto getUserById(UUID id, User authenticatedUser);
+    void updateUserById(UUID id, UpdateUserRequestDto dto, User authenticatedUser);
     void changeUserStatus(UUID id, UpdateUserStatusDto dto);  // -> requires role = ADMIN
+    void deleteUser(UUID id, User authenticatedUser);
 }

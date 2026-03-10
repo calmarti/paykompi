@@ -1,5 +1,7 @@
 package com.calmarti.paykompi.domain.user.service.impl;
 
+import com.calmarti.paykompi.common.exception.BusinessRuleViolationException;
+import com.calmarti.paykompi.common.exception.CustomAccessDeniedException;
 import com.calmarti.paykompi.common.exception.DuplicateResourceException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
 import com.calmarti.paykompi.domain.user.dto.CreateUserRequestDto;
@@ -49,27 +51,43 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toResponse(user);
     }
 
+
     @Override
-    public UserResponseDto getUserById(UUID id) {
+    public UserResponseDto getUserById(UUID id, User authenticatedUser) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (!user.getId().equals(authenticatedUser.getId())){
+            throw new CustomAccessDeniedException("Param userId does not match authenticated userId");
+        }
         return UserMapper.toResponse(user);
     }
 
     @Override
-    public void updateUserById(UUID id, UpdateUserRequestDto dto) {
+    public void updateUserById(UUID id, UpdateUserRequestDto dto, User authenticatedUser) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (!user.getId().equals(authenticatedUser.getId())){
+            throw new CustomAccessDeniedException("Id param does not match authenticated user id");
+        }
         UserMapper.updateEntity(user, dto);
         userRepository.save(user);
     }
 
     @Override
     public void changeUserStatus(UUID id, UpdateUserStatusDto dto) {
-        //TODO: control for transition from CLOSED to ACTIVE or SUSPENDED
         User user = userRepository.findById(id).
                 orElseThrow(() -> new ResourceNotFoundException("User not found"));
         UserMapper.updateUserStatusInEntity(user, dto);
         userRepository.save(user);
+    }
+
+    @Override
+    public void deleteUser(UUID id, User authenticatedUser) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (!user.getId().equals(authenticatedUser.getId()) && ! authenticatedUser.getUserRole().equals(UserRole.ADMIN)){
+            throw new CustomAccessDeniedException("Id param does not match authenticated user id");
+        }
+        userRepository.deleteById(id);
     }
 }

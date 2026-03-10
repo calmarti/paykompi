@@ -83,7 +83,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(()->new ResourceNotFoundException("Order not found"));
         if (! order.getMerchant().getId().equals(merchant.getId()) && ! merchant.getUserRole().equals(UserRole.ADMIN)){
-           throw new CustomAccessDeniedException("User cannot access these orders");
+           throw new CustomAccessDeniedException("User cannot access this order");
         }
         if (order.getOrderStatus() != OrderStatus.CREATED){
            throw new BusinessRuleViolationException("Order cannot be cancelled or is already cancelled");

@@ -19,12 +19,13 @@ import java.util.UUID;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
 
-    private OrderService orderService;
+    private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
+    //restricted to users: type = MERCHANT && status = ACTIVE
     @PostMapping
     public ResponseEntity<Void> createOrder(@RequestBody @Valid CreateOrderRequestDto request, Authentication authentication){
         User user = (User) authentication.getPrincipal();
@@ -40,6 +41,7 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    //TODO: refactor: remove the specificity of "by merchantId" and just add pagination and filters for all relevant fields (not just merchantId)
     //GET /api/orders?merchantId={userId} - Get all orders created by user - Restricted to order owner and ADMIN
     @GetMapping
     public ResponseEntity<List<OrderResponseDto>> getAllOrdersByMerchantId(@RequestParam UUID merchantId, @AuthenticationPrincipal User user){
