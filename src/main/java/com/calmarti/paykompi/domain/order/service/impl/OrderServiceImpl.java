@@ -32,7 +32,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public UUID createOrder(CreateOrderRequestDto dto, User merchant) {
-        // TODO: POST /api/orders
         // A MERCHANT user calls POST /api/v1/orders with an amount, currency, and description.
         // Validations:
         // 1. UserType = MERCHANT -> validated by Security Config

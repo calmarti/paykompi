@@ -53,12 +53,22 @@ public class SecurityConfig {
                      .hasRole("ADMIN")
                      .requestMatchers(HttpMethod.PATCH, "/api/v1/accounts/*/status")
                      .hasRole("ADMIN")
-                     .requestMatchers(HttpMethod.POST,"/api/v1/orders")
-                     .hasRole("MERCHANT")
                      .requestMatchers(HttpMethod.GET,"/api/v1/payments")     //Get all payments
                      .hasRole("ADMIN")
                      .requestMatchers(HttpMethod.GET,"/api/v1/transactions/**")
                      .hasRole("ADMIN")
+
+                     .requestMatchers(HttpMethod.POST,"/api/v1/orders")
+                     .hasRole("MERCHANT")
+                     //TODO: remove this restriction (userType = USER) for order creation (otherwise it'd be ALSO required for all POST endpoints)
+                     .requestMatchers(HttpMethod.POST,"/api/v1/orders")
+                     .hasRole("USER")
+
+                     .requestMatchers(HttpMethod.POST, "/api/v1/accounts")
+                     .hasRole("ACTIVE")
+                     .requestMatchers(HttpMethod.GET, "/api/v1/accounts/**")
+                     .hasRole("ACTIVE")
+
                      .anyRequest().authenticated() //everything else requires authentication
              )
 

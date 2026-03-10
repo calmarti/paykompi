@@ -7,12 +7,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.List;
 
 
@@ -47,19 +49,34 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (user != null) {
 
-                List<SimpleGrantedAuthority> authorities = List.of(
-                        new SimpleGrantedAuthority("ROLE_" + user.getUserRole().name()),
-                        new SimpleGrantedAuthority(("ROLE_" + user.getUserType().name()))
-                );
+                UsernamePasswordAuthenticationToken authToken = buildAuthToken(user);
 
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(
-                                user, null, authorities
-                        );
+//                Collection<GrantedAuthority> authorities = List.of(
+//                        new SimpleGrantedAuthority("ROLE_" + user.getUserRole().name()),
+//                        new SimpleGrantedAuthority("ROLE_" + user.getUserType().name()),
+//                        new SimpleGrantedAuthority("ROLE_" + user.getUserStatus().name())
+//                );
+//
+//                UsernamePasswordAuthenticationToken authToken =
+//                        new UsernamePasswordAuthenticationToken(
+//                                user, null, authorities
+//                        );
+
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
 
         chain.doFilter(request, response);
     }
+
+    private UsernamePasswordAuthenticationToken buildAuthToken(User user) {
+
+        Collection<GrantedAuthority> authorities = List.of(
+                new SimpleGrantedAuthority("ROLE_" + user.getUserRole().name()),
+                new SimpleGrantedAuthority("ROLE_" + user.getUserType().name()),
+                new SimpleGrantedAuthority("ROLE_" + user.getUserStatus().name())
+        );
+        return new UsernamePasswordAuthenticationToken(user, null, authorities);
+    }
+
 }

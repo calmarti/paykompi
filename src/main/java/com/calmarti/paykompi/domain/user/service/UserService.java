@@ -13,7 +13,5 @@ public interface UserService {
     UserResponseDto createUser(CreateUserRequestDto dto);
     UserResponseDto getUserById(UUID id);
     void updateUserById(UUID id, UpdateUserRequestDto dto);
-    //TODO: control for transition from CLOSED to ACTIVE or SUSPENDED
     void changeUserStatus(UUID id, UpdateUserStatusDto dto);  // -> requires role = ADMIN
-    //void changeUserPassword(UUID id, String password);   // -> private: owned by user
 }

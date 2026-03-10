@@ -41,7 +41,6 @@ public class AccountServiceImpl implements AccountService {
         }
         Account account = AccountMapper.toEntity(dto, user);
         account.setBalance(BigDecimal.ZERO);
-        account.setAvailableBalance(BigDecimal.ZERO);
         account.setAccountStatus(AccountStatus.ACTIVE);
         accountRepository.save(account);
         return AccountMapper.toIdResponse(account).id();

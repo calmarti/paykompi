@@ -23,8 +23,6 @@ import java.util.UUID;
 @Setter
 
 
-//TODO: think about UK and business contraints
-
 @Entity
 @Table(name="PAYMENTS",  check = {
         @CheckConstraint(name = "CK_accounts_amount_non_negative", constraint = "amount >= 0")

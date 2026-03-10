@@ -41,12 +41,13 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping
+    //TODO: implement filters and pagination
+    @GetMapping     //available only to ADMIN
     ResponseEntity<List<AccountResponseDto>>getAllAccounts(){
         return ResponseEntity.ok(accountService.getAllAccounts());
     }
 
-    @PatchMapping("/{id}/status")
+    @PatchMapping("/{id}/status")   //available only to ADMIN
     public ResponseEntity<Void> updateAccountStatus(@PathVariable("id") UUID accountId, @RequestBody @Valid UpdateAccountStatusDto request){
         accountService.updateAccountStatus(accountId, request);
         return ResponseEntity.noContent().build();

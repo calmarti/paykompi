@@ -27,7 +27,6 @@ import java.util.UUID;
         @UniqueConstraint(name = "UK_accounts_user_id_currency", columnNames = {"user_id", "currency"}),
         check = {
                 @CheckConstraint(name = "CK_accounts_balance_non_negative", constraint = "balance >= 0"),
-                @CheckConstraint(name = "CK_accounts_available_balance_non_negative", constraint = "available_balance >= 0"),
                 @CheckConstraint(name = "CK_accounts_available_balance_lte_balance", constraint = "available_balance <= balance")
         })
 public class Account {
@@ -44,9 +43,6 @@ public class Account {
     private Currency currency;
     @Column(name = "balance", nullable = false, precision = 19, scale = 2)
     private BigDecimal balance;
-    @Column(name = "available_balance", nullable = false, precision = 19, scale = 2)
-    //TODO: remove availablaBalance here and anywhere else it appears
-    private BigDecimal availableBalance;
     @Column(name = "account_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private AccountStatus accountStatus;

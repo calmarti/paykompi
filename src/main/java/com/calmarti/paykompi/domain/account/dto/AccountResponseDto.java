@@ -12,7 +12,6 @@ public record AccountResponseDto(
         String username,
         Currency currency,
         BigDecimal balance,
-        BigDecimal availableBalance,
         AccountStatus accountStatus,
         Instant createdAt,
         Instant updatedAt
