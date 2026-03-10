@@ -10,5 +10,8 @@ import java.util.UUID;
 
 public interface TransactionService {
     public TransactionResponseDto getTransactionById(UUID transactionId);
-    public CustomPage<TransactionResponseDto> getAllTransactions(UUID accountId, UUID paymentId,  Source source, EntryType entryType, Pageable pageable);
+    public CustomPage<TransactionResponseDto> getAllTransactions(
+            UUID accountId, UUID paymentId,
+            Source source, EntryType entryType,
+            Pageable pageable);
 }

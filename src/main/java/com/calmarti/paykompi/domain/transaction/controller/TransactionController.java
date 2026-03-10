@@ -30,7 +30,7 @@ public class TransactionController {
 
     //GET all transaction with URL query params: accountId, paymentID and pagination params - - available only to role = ADMIN
     @GetMapping
-    ResponseEntity<CustomPage<TransactionResponseDto>> getTransactions(
+    ResponseEntity<CustomPage<TransactionResponseDto>> getAllTransactions(
             @RequestParam(required = false) UUID accountId,
             @RequestParam(required = false) UUID paymentId,
             @RequestParam(required=false) EntryType entryType,

@@ -27,6 +27,7 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
+    //restricted to users with status = ACTIVE && type = CUSTOMER
     @PostMapping
     ResponseEntity<Void> createPayment(@RequestBody @Valid CreatePaymentRequestDto request, @AuthenticationPrincipal User user){
       UUID id = paymentService.createPayment(request, user);
