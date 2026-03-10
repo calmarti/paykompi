@@ -1,12 +1,16 @@
 package com.calmarti.paykompi.domain.user.controller;
 
+import com.calmarti.paykompi.common.dto.CustomPage;
 import com.calmarti.paykompi.domain.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.domain.user.dto.UpdateUserRequestDto;
 import com.calmarti.paykompi.domain.user.dto.UpdateUserStatusDto;
 import com.calmarti.paykompi.domain.user.dto.UserResponseDto;
 import com.calmarti.paykompi.domain.user.entity.User;
+import com.calmarti.paykompi.domain.user.enums.UserStatus;
+import com.calmarti.paykompi.domain.user.enums.UserType;
 import com.calmarti.paykompi.domain.user.service.UserService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -56,8 +60,14 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
-    //TODO: implement GET all users with pagination and filters (for completeness)  - restricted to role = ADMIN
-
+    @GetMapping
+    ResponseEntity<CustomPage<UserResponseDto>> getAllUsers(
+            @RequestParam(required = false) UserType userType,
+            @RequestParam(required = false)UserStatus userStatus,
+            Pageable pageable){
+        CustomPage<UserResponseDto> response = userService.getAllUsers(userType, userStatus, pageable);
+        return ResponseEntity.ok(response);
+    }
 
     //restricted to own user and role = ADMIN
     @DeleteMapping("/{id}")

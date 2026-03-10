@@ -49,6 +49,8 @@ public class SecurityConfig {
                                 "/swagger-ui.html",
                                 "/error/**")
                      .permitAll()
+                     .requestMatchers(HttpMethod.GET,"/api/v1/users")     //Get all payments
+                     .hasRole("ADMIN")
                      .requestMatchers(HttpMethod.PATCH,"/api/v1/user/*/status")   //update user status
                      .hasRole("ADMIN")
                      .requestMatchers(HttpMethod.GET,"/api/v1/accounts")     //Get all accounts

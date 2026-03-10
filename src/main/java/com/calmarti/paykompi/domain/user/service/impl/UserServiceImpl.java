@@ -1,9 +1,11 @@
 package com.calmarti.paykompi.domain.user.service.impl;
 
+import com.calmarti.paykompi.common.dto.CustomPage;
 import com.calmarti.paykompi.common.exception.BusinessRuleViolationException;
 import com.calmarti.paykompi.common.exception.CustomAccessDeniedException;
 import com.calmarti.paykompi.common.exception.DuplicateResourceException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
+import com.calmarti.paykompi.domain.transaction.entity.Transaction;
 import com.calmarti.paykompi.domain.user.dto.CreateUserRequestDto;
 import com.calmarti.paykompi.domain.user.dto.UpdateUserRequestDto;
 import com.calmarti.paykompi.domain.user.dto.UpdateUserStatusDto;
@@ -11,9 +13,13 @@ import com.calmarti.paykompi.domain.user.dto.UserResponseDto;
 import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserRole;
 import com.calmarti.paykompi.domain.user.enums.UserStatus;
+import com.calmarti.paykompi.domain.user.enums.UserType;
 import com.calmarti.paykompi.domain.user.mapper.UserMapper;
 import com.calmarti.paykompi.domain.user.repository.UserRepository;
 import com.calmarti.paykompi.domain.user.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,7 +62,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getUserById(UUID id, User authenticatedUser) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        if (!user.getId().equals(authenticatedUser.getId())){
+        if ( !user.getId().equals(authenticatedUser.getId()) && authenticatedUser.getUserRole() != UserRole.ADMIN) {
             throw new CustomAccessDeniedException("Param userId does not match authenticated userId");
         }
         return UserMapper.toResponse(user);
@@ -82,6 +88,27 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public CustomPage<UserResponseDto> getAllUsers(UserType userType, UserStatus userStatus, Pageable pageable) {
+
+        Specification<User> spec = Specification.allOf();
+
+        if (userType != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("userType"), userType));
+        }
+        if (userStatus != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("userStatus"), userStatus));
+        }
+
+        Page<UserResponseDto> paginatedUser = userRepository.findAll(spec, pageable)
+                .map((user)-> UserMapper.toResponse(user));
+
+        return new CustomPage<UserResponseDto>(paginatedUser);
+    }
+
+
+    @Override
     public void deleteUser(UUID id, User authenticatedUser) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -90,4 +117,6 @@ public class UserServiceImpl implements UserService {
         }
         userRepository.deleteById(id);
     }
+
+
 }
