@@ -9,6 +9,7 @@ import com.calmarti.paykompi.domain.account.enums.AccountStatus;
 import com.calmarti.paykompi.domain.account.service.AccountService;
 import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserType;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import java.util.UUID;
 //For endpoints available to users with role = USER, access requires status = ACTIVE
 @RestController
 @RequestMapping("/api/v1/accounts")
+@Tag(name = "Accounts", description = "Operations to manage user accounts")
 public class AccountController {
 
     private final AccountService accountService;

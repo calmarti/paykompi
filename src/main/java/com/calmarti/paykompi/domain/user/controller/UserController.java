@@ -9,6 +9,13 @@ import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserStatus;
 import com.calmarti.paykompi.domain.user.enums.UserType;
 import com.calmarti.paykompi.domain.user.service.UserService;
+import com.calmarti.paykompi.swagger.CreateUserDocs;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -20,6 +27,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/users")
+@Tag(name = "Users", description = "Operations to manage users")
 public class UserController {
 
     private final UserService userService;
@@ -30,6 +38,7 @@ public class UserController {
 
     //Public endpoint
     @PostMapping
+    @CreateUserDocs
     public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto request){
         UserResponseDto userResponseDto = userService.createUser(request);
         return new ResponseEntity<>(userResponseDto,HttpStatus.CREATED);
