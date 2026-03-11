@@ -1,5 +1,7 @@
 package com.calmarti.paykompi.domain.account.service.impl;
 
+import com.calmarti.paykompi.common.dto.CustomPage;
+import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.common.exception.BusinessRuleViolationException;
 import com.calmarti.paykompi.domain.account.dto.AccountResponseDto;
 import com.calmarti.paykompi.domain.account.dto.CreateAccountRequestDto;
@@ -14,13 +16,14 @@ import com.calmarti.paykompi.common.exception.DuplicateResourceException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
 import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserRole;
-import com.calmarti.paykompi.domain.user.enums.UserStatus;
 import com.calmarti.paykompi.domain.user.repository.UserRepository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 
 
@@ -60,14 +63,14 @@ public class AccountServiceImpl implements AccountService {
         return AccountMapper.toResponse(account);
     }
 
-    @Override
-    public List<AccountResponseDto> getAllAccounts() {
-        List<AccountResponseDto> accounts = accountRepository.findAll()
-                .stream()
-                .map(((account) -> AccountMapper.toResponse(account)))
-                .toList();
-        return accounts;
-    }
+//    @Override
+//    public List<AccountResponseDto> getAllAccounts() {
+//        List<AccountResponseDto> accounts = accountRepository.findAll()
+//                .stream()
+//                .map(((account) -> AccountMapper.toResponse(account)))
+//                .toList();
+//        return accounts;
+//    }
 
     @Override
     public void changeAccountStatus(UUID accountId, UpdateAccountStatusDto dto) {
@@ -77,5 +80,29 @@ public class AccountServiceImpl implements AccountService {
             throw new BusinessRuleViolationException("Invalid transition: cannot activate / freeze a closed account");
         }
         accountRepository.save(AccountMapper.updateAccountStatusInEntity(account, dto));
+    }
+
+    @Override
+    public CustomPage<AccountResponseDto> getAllAccounts(String username, Currency currency, AccountStatus accountStatus, Pageable pageable) {
+
+        Specification<Account> spec = Specification.allOf();
+
+        if (username != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("username"), username));
+        }
+        if (currency != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("currency"), currency));
+        }
+        if (accountStatus != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("accountStatus"), accountStatus));
+        }
+
+        Page<Account> paginatedAccount = accountRepository.findAll(spec, pageable);
+        Page<AccountResponseDto> mappedPaginatedAccount = paginatedAccount.map(AccountMapper::toResponse);
+        CustomPage<AccountResponseDto> customPaginatedAcccount = new CustomPage<>(mappedPaginatedAccount);
+        return customPaginatedAcccount;
     }
 }

@@ -1,11 +1,16 @@
 package com.calmarti.paykompi.domain.account.controller;
 
+import com.calmarti.paykompi.common.dto.CustomPage;
+import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.domain.account.dto.AccountResponseDto;
 import com.calmarti.paykompi.domain.account.dto.CreateAccountRequestDto;
 import com.calmarti.paykompi.domain.account.dto.UpdateAccountStatusDto;
+import com.calmarti.paykompi.domain.account.enums.AccountStatus;
 import com.calmarti.paykompi.domain.account.service.AccountService;
 import com.calmarti.paykompi.domain.user.entity.User;
+import com.calmarti.paykompi.domain.user.enums.UserType;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -45,11 +50,16 @@ public class AccountController {
         return ResponseEntity.ok(response);
     }
 
-    //TODO: implement filters and pagination
     //restricted to role = ADMIN
     @GetMapping
-    ResponseEntity<List<AccountResponseDto>>getAllAccounts(){
-        return ResponseEntity.ok(accountService.getAllAccounts());
+    ResponseEntity<CustomPage<AccountResponseDto>>getAllAccounts(
+            @RequestParam(required = false) String username,
+            @RequestParam(required = false) Currency currency,
+            @RequestParam(required = false) AccountStatus accountStatus,
+            Pageable pageable
+    ){
+       CustomPage<AccountResponseDto> response = accountService.getAllAccounts(username, currency, accountStatus, pageable);
+        return ResponseEntity.ok(response);
     }
 
     //restricted to role = ADMIN
