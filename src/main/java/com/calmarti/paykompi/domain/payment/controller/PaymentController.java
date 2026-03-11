@@ -1,12 +1,13 @@
 package com.calmarti.paykompi.domain.payment.controller;
 
 import com.calmarti.paykompi.common.dto.CustomPage;
+import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.domain.payment.dto.CreatePaymentRequestDto;
 import com.calmarti.paykompi.domain.payment.dto.PaymentResponseDto;
+import com.calmarti.paykompi.domain.payment.enums.PaymentStatus;
 import com.calmarti.paykompi.domain.payment.service.PaymentService;
 import com.calmarti.paykompi.domain.user.entity.User;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,10 +44,15 @@ public class PaymentController {
     }
 
     //restricted to ADMIN
-    //TODO: refactor getAllPayments service to allow filtering by: orderId, paymentCurrency, paymentStatus
     @GetMapping
-    ResponseEntity<CustomPage<PaymentResponseDto>> getAllPayments(@RequestParam(required = false) UUID accountId, Pageable pageable ){
-        CustomPage<PaymentResponseDto> response = paymentService.getAllPayments(accountId, pageable);
+    ResponseEntity<CustomPage<PaymentResponseDto>> getAllPayments(
+            @RequestParam(required = false) UUID payerAccountId,
+            @RequestParam(required = false) UUID orderId,
+            @RequestParam(required = false) Currency paymentCurrency,
+            @RequestParam(required = false)PaymentStatus paymentStatus,
+            Pageable pageable ){
+        CustomPage<PaymentResponseDto> response = paymentService.getAllPayments(
+                payerAccountId, orderId, paymentCurrency, paymentStatus, pageable);
         return ResponseEntity.ok(response);
     }
 

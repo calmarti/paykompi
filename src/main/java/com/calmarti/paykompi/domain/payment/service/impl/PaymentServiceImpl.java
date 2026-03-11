@@ -1,6 +1,7 @@
 package com.calmarti.paykompi.domain.payment.service.impl;
 
 import com.calmarti.paykompi.common.dto.CustomPage;
+import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.common.exception.BusinessRuleViolationException;
 import com.calmarti.paykompi.common.exception.CustomAccessDeniedException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
@@ -28,6 +29,7 @@ import com.calmarti.paykompi.domain.user.enums.UserType;
 import com.calmarti.paykompi.domain.user.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -43,7 +45,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final OrderRepository orderRepository;
     private final AccountRepository accountRepository;
     private final UserRepository userRepository;
-   // private final TransactionRepository transactionRepository;
     private final ExternalPaymentApiSimulator externalPaymentApiSimulator;
     private final PaymentFailureService paymentFailureService;
     private final PaymentExecutionService paymentExecutionService;
@@ -59,8 +60,7 @@ public class PaymentServiceImpl implements PaymentService {
         this.orderRepository = orderRepository;
         this.accountRepository = accountRepository;
         this.userRepository = userRepository;
-        //this.transactionRepository = transactionRepository;
-        this.externalPaymentApiSimulator = externalPaymentApiSimulator;
+             this.externalPaymentApiSimulator = externalPaymentApiSimulator;
         this.paymentFailureService = paymentFailureService;
         this.paymentExecutionService = paymentExecutionService;
     }
@@ -167,17 +167,32 @@ public class PaymentServiceImpl implements PaymentService {
 
 
     @Override
-    public CustomPage<PaymentResponseDto> getAllPayments(UUID accountId, Pageable pageable) {
-        Page<PaymentResponseDto> paginatedPayment;
-        if (accountId != null){
-           paginatedPayment = paymentRepository.findByPayerAccount_Id(accountId, pageable)
-                   .map((payment)-> PaymentMapper.toResponse(payment));
+    public CustomPage<PaymentResponseDto> getAllPayments(
+            UUID accountId, UUID orderId, Currency paymentCurrency,
+            PaymentStatus paymentStatus, Pageable pageable) {
+
+        Specification<Payment> spec = Specification.allOf();
+
+        if (accountId != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("payerAccount").get("id"), accountId));
         }
-        else{
-           paginatedPayment = paymentRepository.findAll(pageable)
-                   .map((payment)-> PaymentMapper.toResponse(payment));
+        if (orderId != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("order").get("id"), orderId));
         }
-        CustomPage<PaymentResponseDto> customPaginatedPayment = new CustomPage<>(paginatedPayment);
-        return customPaginatedPayment;
+        if (paymentCurrency != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("paymentCurrency"), paymentCurrency));
+        }
+        if (paymentStatus != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("paymentStatus"), paymentStatus));
+        }
+
+        Page<PaymentResponseDto> paginatedPayment = paymentRepository.findAll(spec, pageable)
+                .map(PaymentMapper::toResponse);
+
+        return new CustomPage<>(paginatedPayment);
     }
 }
