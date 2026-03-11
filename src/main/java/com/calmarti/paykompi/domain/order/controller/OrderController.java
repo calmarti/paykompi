@@ -1,11 +1,15 @@
 package com.calmarti.paykompi.domain.order.controller;
 
+import com.calmarti.paykompi.common.dto.CustomPage;
+import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.domain.order.dto.CreateOrderRequestDto;
 import com.calmarti.paykompi.domain.order.dto.OrderResponseDto;
 import com.calmarti.paykompi.domain.order.entity.Order;
+import com.calmarti.paykompi.domain.order.enums.OrderStatus;
 import com.calmarti.paykompi.domain.order.service.OrderService;
 import com.calmarti.paykompi.domain.user.entity.User;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,11 +45,16 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
-    //TODO: restructure with pagination and filters for all relevant fields (not just merchantId) - Restricted to order owner and ADMIN
-    //GET /api/orders?merchantId={userId} - Get all orders created by user - Restricted to order owner and ADMIN
+
+    //Get all orders - Restricted to order owner and ADMIN
     @GetMapping
-    public ResponseEntity<List<OrderResponseDto>> getAllOrdersByMerchantId(@RequestParam UUID merchantId, @AuthenticationPrincipal User user){
-        return ResponseEntity.ok(orderService.getAllOrdersByMerchantId(merchantId, user));
+    public ResponseEntity<CustomPage<OrderResponseDto>> getAllOrders(
+            @RequestParam(required = false) UUID merchantId,
+            @RequestParam(required = false) Currency currency,
+            @RequestParam(required = false) OrderStatus orderStatus,
+            Pageable pageable,
+            @AuthenticationPrincipal User user){
+        return ResponseEntity.ok(orderService.getAllOrders(merchantId, currency, orderStatus, user, pageable));
     }
 
     //PATCH /api/v1/orders/{orderId}/cancel  - Restricted to order owner and ADMIN

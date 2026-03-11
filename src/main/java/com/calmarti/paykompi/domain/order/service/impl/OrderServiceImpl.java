@@ -1,5 +1,7 @@
 package com.calmarti.paykompi.domain.order.service.impl;
 
+import com.calmarti.paykompi.common.dto.CustomPage;
+import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.common.exception.BusinessRuleViolationException;
 import com.calmarti.paykompi.common.exception.CustomAccessDeniedException;
 import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
@@ -11,9 +13,13 @@ import com.calmarti.paykompi.domain.order.enums.OrderStatus;
 import com.calmarti.paykompi.domain.order.mapper.OrderMapper;
 import com.calmarti.paykompi.domain.order.repository.OrderRepository;
 import com.calmarti.paykompi.domain.order.service.OrderService;
+import com.calmarti.paykompi.domain.transaction.entity.Transaction;
 import com.calmarti.paykompi.domain.user.entity.User;
 import com.calmarti.paykompi.domain.user.enums.UserRole;
 import com.calmarti.paykompi.domain.user.enums.UserType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -66,20 +72,36 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDto> getAllOrdersByMerchantId(UUID merchantId, User user) {
+    public CustomPage<OrderResponseDto> getAllOrders(UUID merchantId, Currency currency,
+                                                     OrderStatus orderStatus,
+                                                     User user, Pageable pageable) {
        //validate access: merchant.id = order.merchant_id || ROLE = ADMIN
         if (! user.getId().equals(merchantId) && ! user.getUserRole().equals(UserRole.ADMIN)){
             throw new CustomAccessDeniedException("User cannot access these orders");
         }
-        //validate merchantId exists
-        if (! orderRepository.existsByMerchantId(merchantId)){
-            throw new ResourceNotFoundException("Order not found");
+
+        Specification<Order> spec = Specification.allOf();
+
+        if (merchantId != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("merchant").get("id"), merchantId));
         }
-        List <OrderResponseDto> orders = orderRepository.findAllByMerchantId(merchantId)
-                .stream()
-                .map((order)-> OrderMapper.toResponse(order))
-                .toList();
-        return orders;
+
+        if (currency != null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("currency"), currency));
+        }
+
+        if (orderStatus!= null) {
+            spec = spec.and((root, query, cb) ->
+                    cb.equal(root.get("orderStatus"), orderStatus));
+        }
+
+        Page<OrderResponseDto> paginatedOrder = orderRepository.findAll(spec, pageable)
+                .map(OrderMapper::toResponse);
+        CustomPage<OrderResponseDto> customPaginatedOrder = new CustomPage<>(paginatedOrder);
+
+        return customPaginatedOrder;
     }
 
     @Override
