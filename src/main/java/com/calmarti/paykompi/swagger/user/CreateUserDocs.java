@@ -1,4 +1,4 @@
-package com.calmarti.paykompi.swagger;
+package com.calmarti.paykompi.swagger.user;
 
 import com.calmarti.paykompi.common.exception.APIErrorDetails;
 import com.calmarti.paykompi.domain.user.dto.CreateUserRequestDto;
@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
