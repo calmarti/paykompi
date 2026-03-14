@@ -4,6 +4,8 @@ import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.domain.order.enums.OrderStatus;
 import com.calmarti.paykompi.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +31,7 @@ private UUID id;
 @JoinColumn(name="merchant_id", foreignKey = @ForeignKey(name="FK_orders_users"), nullable = false)
 private User merchant;
 @Column(name = "amount", nullable = false, precision = 19, scale = 2)
+@DecimalMin(value = "0.01")
 private BigDecimal amount;
 @Column(name = "currency", nullable = false, length = 3)
 @Enumerated(EnumType.STRING)

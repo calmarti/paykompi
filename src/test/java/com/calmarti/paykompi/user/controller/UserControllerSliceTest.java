@@ -52,10 +52,10 @@ public class UserControllerSliceTest {
                     Instant.parse("2026-02-22T11:28:04.962Z"),
                     Instant.parse("2026-XXXXXXXXXXXXXXXXXXX"));
 
-            //arrange
+            //arrange - GIVEN
             given(userService.getUserById(id))
                     .willReturn(testUser);
-            //act and assert
+            //act (WHEN) and assert (THEN)
             mockMvc.perform(get("/api/v1/users/{id}", id))
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))

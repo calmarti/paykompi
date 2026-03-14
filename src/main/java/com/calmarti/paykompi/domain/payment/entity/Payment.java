@@ -25,7 +25,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name="PAYMENTS",  check = {
-        @CheckConstraint(name = "CK_accounts_amount_non_negative", constraint = "amount >= 0")
+        @CheckConstraint(name = "CK_accounts_amount_non_negative", constraint = "amount >= 0.01")
 })
 
 public class Payment {

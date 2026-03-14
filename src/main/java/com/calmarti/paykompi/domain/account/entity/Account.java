@@ -4,6 +4,7 @@ import com.calmarti.paykompi.domain.account.enums.AccountStatus;
 import com.calmarti.paykompi.common.enums.Currency;
 import com.calmarti.paykompi.domain.user.entity.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,7 +28,6 @@ import java.util.UUID;
         @UniqueConstraint(name = "UK_accounts_user_id_currency", columnNames = {"user_id", "currency"}),
         check = {
                 @CheckConstraint(name = "CK_accounts_balance_non_negative", constraint = "balance >= 0"),
-                @CheckConstraint(name = "CK_accounts_available_balance_lte_balance", constraint = "available_balance <= balance")
         })
 public class Account {
     @Id
@@ -42,6 +42,7 @@ public class Account {
     @Enumerated(EnumType.STRING)
     private Currency currency;
     @Column(name = "balance", nullable = false, precision = 19, scale = 2)
+    @PositiveOrZero
     private BigDecimal balance;
     @Column(name = "account_status", nullable = false)
     @Enumerated(EnumType.STRING)
