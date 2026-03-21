@@ -67,16 +67,16 @@ public class UserControllerSliceTest {
                     Instant.parse("2026-03-21T18:37:06.239Z"));
 
             //Authenticated user
-            User authenticatedUser = new User();
-            authenticatedUser.setId(id);
-            authenticatedUser.setUserRole(UserRole.USER);
+            User mockedAuthenticatedUser = new User();
+            mockedAuthenticatedUser.setId(UUID.randomUUID());    //since we are abstracting away security auth user can be any user
+            mockedAuthenticatedUser.setUserRole(UserRole.USER);
 
             //arrange - GIVEN
             given(userService.getUserById(eq(id), any(User.class)))  //since we are abstracting away security auth user can be any user
                     .willReturn(testUser);
             //act - (WHEN)
             mockMvc.perform(get("/api/v1/users/{id}", id)
-                    .principal(new UsernamePasswordAuthenticationToken(authenticatedUser, null)))
+                    .principal(new UsernamePasswordAuthenticationToken(mockedAuthenticatedUser, null)))
             //assert -(THEN)
                     .andExpect(status().isOk())
                     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
