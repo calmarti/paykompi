@@ -32,6 +32,7 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+//These slice tests exclude Spring Security beans
 @WebMvcTest(
         controllers = UserController.class,
         excludeFilters = @ComponentScan.Filter(
