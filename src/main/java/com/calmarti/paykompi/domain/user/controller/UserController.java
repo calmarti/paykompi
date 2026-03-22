@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -41,19 +42,16 @@ public class UserController {
 
     @GetMapping("/{id}")
     //restricted ONLY to own user
-    public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id, Authentication authentication){
-        //Get principal (user) from authentication object
-        User authenticatedUser = (User) authentication.getPrincipal();
-        UserResponseDto userResponseDto = userService.getUserById(id, authenticatedUser);
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id,  @AuthenticationPrincipal User auhtenticatedUser){
+            UserResponseDto userResponseDto = userService.getUserById(id, auhtenticatedUser);
         return ResponseEntity.ok(userResponseDto);
     }
 
 
     //restricted ONLY to own user (Forbidden for role = ADMIN!)
     @PutMapping("/{id}")
-    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @RequestBody UpdateUserRequestDto request, Authentication authentication){
-        User authenticatedUser = (User) authentication.getPrincipal();
-        userService.updateUserById(id, request, authenticatedUser);
+    public ResponseEntity<Void> updateUserById(@PathVariable UUID id, @RequestBody UpdateUserRequestDto request,  @AuthenticationPrincipal User auhtenticatedUser){
+        userService.updateUserById(id, request, auhtenticatedUser);
         return ResponseEntity.noContent().build();
     }
 
@@ -64,6 +62,7 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 
+    //restricted to role = ADMIN
     @GetMapping
     ResponseEntity<CustomPage<UserResponseDto>> getAllUsers(
             @RequestParam(required = false) UserType userType,
@@ -75,9 +74,8 @@ public class UserController {
 
     //restricted to own user and role = ADMIN
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable UUID id, Authentication authentication){
-        User authenticatedUser = (User) authentication.getPrincipal();
-        userService.deleteUser(id, authenticatedUser);
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id, @AuthenticationPrincipal User auhtenticatedUser){
+        userService.deleteUser(id, auhtenticatedUser);
         return ResponseEntity.noContent().build();
     }
 }

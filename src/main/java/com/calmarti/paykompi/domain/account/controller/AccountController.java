@@ -37,10 +37,8 @@ public class AccountController {
 
     //requires authentication of (active) user
     @PostMapping
-    public ResponseEntity<Void> createAccount(@RequestBody @Valid CreateAccountRequestDto request, Authentication authentication) {
-        //Get principal (user) from authentication object
-        User user = (User) authentication.getPrincipal();
-        UUID id = accountService.createAccount(request, user);
+    public ResponseEntity<Void> createAccount(@RequestBody @Valid CreateAccountRequestDto request, @AuthenticationPrincipal User auhtenticatedUser) {
+        UUID id = accountService.createAccount(request, auhtenticatedUser);
         URI location = URI.create("/api/v1/accounts/" + id);
         return ResponseEntity.created(location).build();
     }

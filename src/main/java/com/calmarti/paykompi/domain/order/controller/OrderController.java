@@ -31,9 +31,8 @@ public class OrderController {
 
     //restricted to users: type = MERCHANT && status = ACTIVE
     @PostMapping
-    public ResponseEntity<Void> createOrder(@RequestBody @Valid CreateOrderRequestDto request, Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        UUID id = orderService.createOrder(request,user);
+    public ResponseEntity<Void> createOrder(@RequestBody @Valid CreateOrderRequestDto request, @AuthenticationPrincipal User merchant){
+        UUID id = orderService.createOrder(request,merchant);
         URI location = URI.create("/api/v1/orders/" + id);
         return ResponseEntity.created(location).build();
     }
