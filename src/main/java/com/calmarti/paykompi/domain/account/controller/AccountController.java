@@ -35,7 +35,7 @@ public class AccountController {
     }
 
 
-    //requires authentication of (active) user
+    //requires user status = ACTIVE
     @PostMapping
     public ResponseEntity<Void> createAccount(@RequestBody @Valid CreateAccountRequestDto request, @AuthenticationPrincipal User auhtenticatedUser) {
         UUID id = accountService.createAccount(request, auhtenticatedUser);
@@ -43,7 +43,7 @@ public class AccountController {
         return ResponseEntity.created(location).build();
     }
 
-    //requires (active) user to be owner of account OR role = ADMIN
+    //requires ownership of account OR role = ADMIN
     @GetMapping("/{id}")
     public ResponseEntity<AccountResponseDto> getAccountById(@PathVariable("id") UUID accountId, @AuthenticationPrincipal User user){
         AccountResponseDto response = accountService.getAccountById(accountId, user);

@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    //restricted ONLY to own user
+    //restricted to own user and ADMIN
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable UUID id,  @AuthenticationPrincipal User auhtenticatedUser){
             UserResponseDto userResponseDto = userService.getUserById(id, auhtenticatedUser);
         return ResponseEntity.ok(userResponseDto);

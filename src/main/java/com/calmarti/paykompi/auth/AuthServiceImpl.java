@@ -33,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BadCredentialsException("Invalid credentials");
         }
 
+        //TODO: this should not be validated at all here! (and it should not be BacCredentialException anyways)
         if (user.getUserStatus() != UserStatus.ACTIVE) {
             throw new BadCredentialsException("User is not active");
         }
