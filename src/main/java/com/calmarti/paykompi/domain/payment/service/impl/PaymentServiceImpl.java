@@ -89,7 +89,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (payer.getUserStatus() != UserStatus.ACTIVE){
             throw new BusinessRuleViolationException("Payer status is not 'ACTIVE'");
         }
-//        User.type == PERSONAL
+//        User.type == CUSTOMER
         if (payer.getUserType() != UserType.CUSTOMER){
             throw new BusinessRuleViolationException("User type is not 'CUSTOMER'");
         }
@@ -136,7 +136,7 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             externalPaymentApiSimulator.approvePayment();
             payment.setPaymentStatus(PaymentStatus.APPROVED);
-            paymentExecutionService.executePayment(account, merchantAccount, payment, order);
+            paymentExecutionService.executePayment(account.getId(), merchantAccount.getId(), payment.getId(), order.getId());
         }
         catch(RuntimeException exception){
             paymentFailureService.markPaymentFailed(payment.getId());
@@ -147,7 +147,7 @@ public class PaymentServiceImpl implements PaymentService {
         return payment.getId();
     }
 
-    //    Final Payment state possibilities
+    //Payment state transitions
     //CREATED - APPROVED - COMPLETED
     //CREATED - FAILED (approval failed)
     //CREATED - APPROVED - FAILED (executePayment failed for some reason)

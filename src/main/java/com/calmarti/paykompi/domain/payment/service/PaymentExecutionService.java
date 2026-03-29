@@ -1,10 +1,14 @@
 package com.calmarti.paykompi.domain.payment.service;
 
+import com.calmarti.paykompi.common.exception.ResourceNotFoundException;
 import com.calmarti.paykompi.domain.account.entity.Account;
+import com.calmarti.paykompi.domain.account.repository.AccountRepository;
 import com.calmarti.paykompi.domain.order.entity.Order;
 import com.calmarti.paykompi.domain.order.enums.OrderStatus;
+import com.calmarti.paykompi.domain.order.repository.OrderRepository;
 import com.calmarti.paykompi.domain.payment.entity.Payment;
 import com.calmarti.paykompi.domain.payment.enums.PaymentStatus;
+import com.calmarti.paykompi.domain.payment.repository.PaymentRepository;
 import com.calmarti.paykompi.domain.transaction.entity.Transaction;
 import com.calmarti.paykompi.domain.transaction.enums.EntryType;
 import com.calmarti.paykompi.domain.transaction.enums.Source;
@@ -12,17 +16,32 @@ import com.calmarti.paykompi.domain.transaction.repository.TransactionRepository
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 public class PaymentExecutionService {
     private final TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
+    private final OrderRepository orderRepository;
+    private final PaymentRepository paymentRepository;
 
-    public PaymentExecutionService(TransactionRepository transactionRepository) {
+    public PaymentExecutionService(TransactionRepository transactionRepository, AccountRepository accountRepository, OrderRepository orderRepository, PaymentRepository paymentRepository) {
         this.transactionRepository = transactionRepository;
+        this.accountRepository = accountRepository;
+        this.orderRepository = orderRepository;
+        this.paymentRepository = paymentRepository;
     }
 
-
     @Transactional
-    public void executePayment(Account debitAccount, Account creditAccount, Payment payment, Order order) {
+    public void executePayment(UUID debitAccountId, UUID creditAccountId, UUID paymentId, UUID orderId) {
+        Account debitAccount = accountRepository.findById(debitAccountId)
+                .orElseThrow(()-> new ResourceNotFoundException("Debit account not found"));
+        Account creditAccount = accountRepository.findById(creditAccountId)
+                .orElseThrow(()-> new ResourceNotFoundException("Credit account not found"));
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(()-> new ResourceNotFoundException("Payment not found"));
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(()-> new ResourceNotFoundException("Order not found"));
 
 //        a. Debit payer account
         debitAccount.setBalance(debitAccount.getBalance().subtract(payment.getAmount()));
