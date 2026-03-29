@@ -2,6 +2,7 @@ package com.calmarti.paykompi.auth;
 
 import com.calmarti.paykompi.auth.dto.LoginRequestDto;
 import com.calmarti.paykompi.auth.dto.LoginResponseDto;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,7 +20,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<LoginResponseDto> handleLoginRequest(@RequestBody LoginRequestDto dto){
+    ResponseEntity<LoginResponseDto> handleLoginRequest(@RequestBody @Valid LoginRequestDto dto){
         LoginResponseDto loginResponseDto = authService.loginUser(dto);
         return ResponseEntity.ok(loginResponseDto);
 }
