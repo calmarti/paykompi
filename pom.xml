@@ -119,6 +119,13 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<version>5.4.0</version>
+			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 	</dependencies>
 	<build>
 		<plugins>
