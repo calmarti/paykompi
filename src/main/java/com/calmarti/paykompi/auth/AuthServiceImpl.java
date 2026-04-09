@@ -4,7 +4,6 @@ import com.calmarti.paykompi.auth.dto.LoginRequestDto;
 import com.calmarti.paykompi.auth.dto.LoginResponseDto;
 import com.calmarti.paykompi.config.security.JwtService;
 import com.calmarti.paykompi.domain.user.entity.User;
-import com.calmarti.paykompi.domain.user.enums.UserStatus;
 import com.calmarti.paykompi.domain.user.repository.UserRepository;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;

@@ -1,4 +1,4 @@
-package com.calmarti.paykompi.user.controller;
+package com.calmarti.paykompi.domain.user.controller;
 
 
 import com.calmarti.paykompi.domain.user.controller.UserController;

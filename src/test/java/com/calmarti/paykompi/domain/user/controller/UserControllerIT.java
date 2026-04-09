@@ -1,4 +1,4 @@
-package com.calmarti.paykompi.user.controller;
+package com.calmarti.paykompi.domain.user.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.resttestclient.autoconfigure.AutoConfigureRestTestClient;
