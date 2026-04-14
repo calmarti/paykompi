@@ -121,8 +121,15 @@
 
 		<dependency>
 			<groupId>io.rest-assured</groupId>
-			<version>5.4.0</version>
+			<version>5.5.7</version>
 			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<version>4.0.21</version>
 			<scope>test</scope>
 		</dependency>
 

@@ -1,31 +1,22 @@
 package com.calmarti.paykompi.auth;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
-import org.junit.jupiter.api.BeforeEach;
+import com.calmarti.paykompi.common.BaseApiTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-
+import org.springframework.http.HttpStatus;
+import io.restassured.http.ContentType;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AuthApiTest {
 
-    @LocalServerPort
-    int port;
 
-    @BeforeEach
-    void setup() {
-        RestAssured.port = port;
-    }
+public class AuthApiTest extends BaseApiTest {
 
+    private final String path = "/api/v1/auth/login";
 
     @Test
     void shouldReturn200AndTokenWhenCredentialsAreValid() {
 
-        String requestBody = """
+        String validCredentials = """
                 {
                   "username": "admin",
                   "password": "password"
@@ -33,16 +24,38 @@ public class AuthApiTest {
                 """;
 
         given()
+                .spec(spec)
+                .body(validCredentials)
+                .when()
+                .post(path)
+                .then()
+                .statusCode(HttpStatus.OK.value())
                 .contentType(ContentType.JSON)
-                .body(requestBody)
-        .when()
-                .post("/api/v1/auth/login")
-        .then()
-                .statusCode(200)
-                .body("token", notNullValue())
+                .body("token", not(emptyOrNullString()))
                 .body("type", equalTo("Bearer"));
-
-
     }
 
+    @Test
+    void shouldReturn401WhenCredentialsAreInvalid() {
+
+        String invalidCredentials = """
+                
+                { "username": "wrong_user",
+                  "password": "wrong_password"
+                }
+                """;
+
+        given()
+                .spec(spec)
+                .body(invalidCredentials)
+                .when()
+                .post(path)
+                .then()
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .contentType(ContentType.JSON)
+                .body("message", not(emptyOrNullString()))
+                .body("status", equalTo(401))
+                .body("path", equalTo(path))
+                .body("timestamp", matchesPattern("^\\d{4}-\\d{2}-\\d{2}T.*$"));
+    }
 }
